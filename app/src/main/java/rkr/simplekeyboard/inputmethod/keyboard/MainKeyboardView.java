@@ -28,8 +28,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Typeface;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -102,6 +104,14 @@ public final class MainKeyboardView extends KeyboardView implements MoreKeysPane
 
     private final TimerHandler mTimerHandler;
     private final int mLanguageOnSpacebarHorizontalMargin;
+
+    // Android TV D-pad navigation state
+    private int mPreferredColumnX = -1;
+    private boolean mIsDpadCenterDown = false;
+    private boolean mIgnoreNextDpadCenterUp = false;
+    private int mDpadDownTouchX = 0;
+    private int mDpadDownTouchY = 0;
+    private long mDpadDownTime = 0;
 
     public MainKeyboardView(final Context context, final AttributeSet attrs) {
         this(context, attrs, R.attr.mainKeyboardViewStyle);
@@ -249,6 +259,7 @@ public final class MainKeyboardView extends KeyboardView implements MoreKeysPane
      */
     @Override
     public void setKeyboard(final Keyboard keyboard) {
+        final Key oldFocusedKey = getFocusedKey();
         // Remove any pending messages, except dismissing preview and key repeat.
         mTimerHandler.cancelLongPressTimers();
         super.setKeyboard(keyboard);
@@ -260,6 +271,18 @@ public final class MainKeyboardView extends KeyboardView implements MoreKeysPane
         mSpaceKey = keyboard.getKey(Constants.CODE_SPACE);
         final int keyHeight = keyboard.mMostCommonKeyHeight;
         mLanguageOnSpacebarTextSize = keyHeight * mLanguageOnSpacebarTextRatio;
+
+        if (oldFocusedKey != null) {
+            final int cx = oldFocusedKey.getX() + oldFocusedKey.getWidth() / 2;
+            final int cy = oldFocusedKey.getY() + oldFocusedKey.getHeight() / 2;
+            setFocusedKey(DpadNavigator.findClosestKey(keyboard, cx, cy));
+        } else {
+            final Key defaultKey = DpadNavigator.findDefaultKey(keyboard);
+            setFocusedKey(defaultKey);
+            if (defaultKey != null) {
+                mPreferredColumnX = defaultKey.getX() + defaultKey.getWidth() / 2;
+            }
+        }
     }
 
     /**
@@ -500,6 +523,9 @@ public final class MainKeyboardView extends KeyboardView implements MoreKeysPane
         PointerTracker.setReleasedKeyGraphicsToAllKeys();
         PointerTracker.dismissAllMoreKeysPanels();
         PointerTracker.cancelAllPointerTrackers();
+        onDismissMoreKeysPanel();
+        mIsDpadCenterDown = false;
+        mIgnoreNextDpadCenterUp = false;
     }
 
     public void closing() {
@@ -509,6 +535,133 @@ public final class MainKeyboardView extends KeyboardView implements MoreKeysPane
 
     public void onHideWindow() {
         onDismissMoreKeysPanel();
+        mIsDpadCenterDown = false;
+        mIgnoreNextDpadCenterUp = false;
+    }
+
+    private int getKeyCenterTouchX(final Key key) {
+        return key.getX() + key.getWidth() / 2 + getPaddingLeft();
+    }
+
+    private int getKeyCenterTouchY(final Key key) {
+        return key.getY() + key.getHeight() / 2 + getPaddingTop()
+                - Math.round(getVerticalCorrection());
+    }
+
+    public boolean handleDpadArrow(final int keyCode) {
+        final Keyboard keyboard = getKeyboard();
+        if (keyboard == null) {
+            return false;
+        }
+        if (isShowingMoreKeysPanel() && mMoreKeysPanel instanceof MoreKeysKeyboardView) {
+            return ((MoreKeysKeyboardView) mMoreKeysPanel).moveDpadFocus(keyCode);
+        }
+        if (mIsDpadCenterDown) {
+            return true;
+        }
+        final Key current = getFocusedKey();
+        if (current == null) {
+            final Key defaultKey = DpadNavigator.findDefaultKey(keyboard);
+            setFocusedKey(defaultKey);
+            if (defaultKey != null) {
+                mPreferredColumnX = defaultKey.getX() + defaultKey.getWidth() / 2;
+            }
+            return defaultKey != null;
+        }
+        if (mPreferredColumnX < 0) {
+            mPreferredColumnX = current.getX() + current.getWidth() / 2;
+        }
+        final Key next = DpadNavigator.findNextKey(keyboard, current, keyCode, mPreferredColumnX);
+        if (next != null) {
+            setFocusedKey(next);
+            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                mPreferredColumnX = next.getX() + next.getWidth() / 2;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean handleDpadCenterDown(final KeyEvent event) {
+        final Keyboard keyboard = getKeyboard();
+        if (keyboard == null) {
+            return false;
+        }
+        if (event.getRepeatCount() > 0 || mIsDpadCenterDown) {
+            if (event.isLongPress() && !isShowingMoreKeysPanel()) {
+                final Key focused = getFocusedKey();
+                if (focused != null && !focused.isRepeatable()) {
+                    PointerTracker.getPointerTracker(0).onLongPressed();
+                }
+            }
+            return true;
+        }
+        if (isShowingMoreKeysPanel() && mMoreKeysPanel instanceof MoreKeysKeyboardView) {
+            ((MoreKeysKeyboardView) mMoreKeysPanel).confirmDpadSelection();
+            mIgnoreNextDpadCenterUp = true;
+            return true;
+        }
+        Key focused = getFocusedKey();
+        if (focused == null) {
+            focused = DpadNavigator.findDefaultKey(keyboard);
+            setFocusedKey(focused);
+            if (focused == null) {
+                return false;
+            }
+            mPreferredColumnX = focused.getX() + focused.getWidth() / 2;
+        }
+        mIsDpadCenterDown = true;
+        mIgnoreNextDpadCenterUp = false;
+        mDpadDownTouchX = getKeyCenterTouchX(focused);
+        mDpadDownTouchY = getKeyCenterTouchY(focused);
+        mDpadDownTime = SystemClock.uptimeMillis();
+        final MotionEvent downEvent = MotionEvent.obtain(
+                mDpadDownTime, mDpadDownTime, MotionEvent.ACTION_DOWN,
+                mDpadDownTouchX, mDpadDownTouchY, 0);
+        processMotionEvent(downEvent);
+        downEvent.recycle();
+        return true;
+    }
+
+    public boolean handleDpadCenterUp(final KeyEvent event) {
+        if (mIgnoreNextDpadCenterUp) {
+            mIgnoreNextDpadCenterUp = false;
+            mIsDpadCenterDown = false;
+            return true;
+        }
+        if (!mIsDpadCenterDown) {
+            return false;
+        }
+        mIsDpadCenterDown = false;
+        if (isShowingMoreKeysPanel() && mMoreKeysPanel instanceof MoreKeysKeyboardView) {
+            final MoreKeysKeyboardView moreKeysView = (MoreKeysKeyboardView) mMoreKeysPanel;
+            final Keyboard moreKeysKb = moreKeysView.getKeyboard();
+            if (moreKeysKb != null && moreKeysKb.getSortedKeys().size() <= 1) {
+                PointerTracker.detachMoreKeysPanelsForDpad();
+                moreKeysView.confirmDpadSelection();
+            } else {
+                PointerTracker.detachMoreKeysPanelsForDpad();
+            }
+            return true;
+        }
+        final long upTime = SystemClock.uptimeMillis();
+        final MotionEvent upEvent = MotionEvent.obtain(
+                mDpadDownTime, upTime, MotionEvent.ACTION_UP,
+                mDpadDownTouchX, mDpadDownTouchY, 0);
+        processMotionEvent(upEvent);
+        upEvent.recycle();
+        return true;
+    }
+
+    public boolean handleBackKey() {
+        if (isShowingMoreKeysPanel()) {
+            PointerTracker.detachMoreKeysPanelsForDpad();
+            onDismissMoreKeysPanel();
+            mIsDpadCenterDown = false;
+            mIgnoreNextDpadCenterUp = false;
+            return true;
+        }
+        return false;
     }
 
     public void startDisplayLanguageOnSpacebar(final boolean subtypeChanged,

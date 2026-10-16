@@ -295,11 +295,10 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     @Override
     public boolean onEvaluateInputViewShown() {
         final boolean useOnScreen = super.onEvaluateInputViewShown();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) {
-            return useOnScreen;
-        } else {
-            return useOnScreen || mSettings.getCurrent().mUseOnScreen;
+        if (mSettings.getCurrent() != null && mSettings.getCurrent().mUseOnScreen) {
+            return true;
         }
+        return useOnScreen;
     }
 
     @Override
@@ -729,8 +728,156 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     @Override
     public void onCodeInput(final int codePoint, final int x, final int y,
             final boolean isKeyRepeat) {
+        if (codePoint == Constants.CODE_CURSOR_LEFT) {
+            onMoveCursorPointer(-1);
+            onUpWithSpacePointerActive();
+            return;
+        }
+        if (codePoint == Constants.CODE_CURSOR_RIGHT) {
+            onMoveCursorPointer(1);
+            onUpWithSpacePointerActive();
+            return;
+        }
         final Event event = createSoftwareKeypressEvent(getCodePointForKeyboard(codePoint), isKeyRepeat);
         onEvent(event);
+    }
+
+    @Override
+    public boolean onKeyDown(final int keyCode, final KeyEvent event) {
+        if (isInputViewShown() && !isShowingOptionDialog()) {
+            final MainKeyboardView mainKeyboardView = mKeyboardSwitcher.getMainKeyboardView();
+            if (mainKeyboardView != null && mainKeyboardView.isShown()) {
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_DPAD_UP:
+                    case KeyEvent.KEYCODE_DPAD_DOWN:
+                    case KeyEvent.KEYCODE_DPAD_LEFT:
+                    case KeyEvent.KEYCODE_DPAD_RIGHT:
+                        if (mainKeyboardView.handleDpadArrow(keyCode)) {
+                            hapticTickFeedback();
+                            return true;
+                        }
+                        break;
+                    case KeyEvent.KEYCODE_DPAD_CENTER:
+                    case KeyEvent.KEYCODE_ENTER:
+                    case KeyEvent.KEYCODE_NUMPAD_ENTER:
+                    case KeyEvent.KEYCODE_BUTTON_A:
+                        if (mainKeyboardView.handleDpadCenterDown(event)) {
+                            return true;
+                        }
+                        break;
+                    case KeyEvent.KEYCODE_BACK:
+                    case KeyEvent.KEYCODE_ESCAPE:
+                        if (mainKeyboardView.isShowingMoreKeysPanel()) {
+                            return true;
+                        }
+                        break;
+                    case KeyEvent.KEYCODE_BUTTON_B:
+                        if (mainKeyboardView.isShowingMoreKeysPanel()) {
+                            return true;
+                        }
+                        requestHideSelf(0);
+                        return true;
+                    case KeyEvent.KEYCODE_BUTTON_X:
+                    case KeyEvent.KEYCODE_MEDIA_REWIND:
+                        onPressKey(Constants.CODE_DELETE, event.getRepeatCount(), true);
+                        onCodeInput(Constants.CODE_DELETE, Constants.NOT_A_COORDINATE,
+                                Constants.NOT_A_COORDINATE, event.getRepeatCount() > 0);
+                        return true;
+                    case KeyEvent.KEYCODE_BUTTON_Y:
+                    case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                        if (event.getRepeatCount() == 0) {
+                            onPressKey(Constants.CODE_SPACE, 0, true);
+                            onCodeInput(Constants.CODE_SPACE, Constants.NOT_A_COORDINATE,
+                                    Constants.NOT_A_COORDINATE, false);
+                        }
+                        return true;
+                    case KeyEvent.KEYCODE_BUTTON_L1:
+                    case KeyEvent.KEYCODE_PROG_RED:
+                        if (event.getRepeatCount() == 0) {
+                            onPressKey(Constants.CODE_SHIFT, 0, true);
+                            onCodeInput(Constants.CODE_SHIFT, Constants.NOT_A_COORDINATE,
+                                    Constants.NOT_A_COORDINATE, false);
+                            onReleaseKey(Constants.CODE_SHIFT, false);
+                        }
+                        return true;
+                    case KeyEvent.KEYCODE_BUTTON_R1:
+                    case KeyEvent.KEYCODE_PROG_GREEN:
+                        if (event.getRepeatCount() == 0) {
+                            onPressKey(Constants.CODE_SWITCH_ALPHA_SYMBOL, 0, true);
+                            onCodeInput(Constants.CODE_SWITCH_ALPHA_SYMBOL,
+                                    Constants.NOT_A_COORDINATE, Constants.NOT_A_COORDINATE, false);
+                            onReleaseKey(Constants.CODE_SWITCH_ALPHA_SYMBOL, false);
+                        }
+                        return true;
+                    case KeyEvent.KEYCODE_PROG_YELLOW:
+                        if (event.getRepeatCount() == 0 && mRichImm.hasMultipleEnabledSubtypes()) {
+                            switchToNextSubtype();
+                        }
+                        return true;
+                    case KeyEvent.KEYCODE_CHANNEL_DOWN:
+                    case KeyEvent.KEYCODE_PAGE_DOWN:
+                        onCodeInput(Constants.CODE_CURSOR_LEFT, Constants.NOT_A_COORDINATE,
+                                Constants.NOT_A_COORDINATE, event.getRepeatCount() > 0);
+                        return true;
+                    case KeyEvent.KEYCODE_CHANNEL_UP:
+                    case KeyEvent.KEYCODE_PAGE_UP:
+                        onCodeInput(Constants.CODE_CURSOR_RIGHT, Constants.NOT_A_COORDINATE,
+                                Constants.NOT_A_COORDINATE, event.getRepeatCount() > 0);
+                        return true;
+                }
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(final int keyCode, final KeyEvent event) {
+        if (isInputViewShown() && !isShowingOptionDialog()) {
+            final MainKeyboardView mainKeyboardView = mKeyboardSwitcher.getMainKeyboardView();
+            if (mainKeyboardView != null && mainKeyboardView.isShown()) {
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_DPAD_UP:
+                    case KeyEvent.KEYCODE_DPAD_DOWN:
+                    case KeyEvent.KEYCODE_DPAD_LEFT:
+                    case KeyEvent.KEYCODE_DPAD_RIGHT:
+                        return true;
+                    case KeyEvent.KEYCODE_DPAD_CENTER:
+                    case KeyEvent.KEYCODE_ENTER:
+                    case KeyEvent.KEYCODE_NUMPAD_ENTER:
+                    case KeyEvent.KEYCODE_BUTTON_A:
+                        if (mainKeyboardView.handleDpadCenterUp(event)) {
+                            return true;
+                        }
+                        break;
+                    case KeyEvent.KEYCODE_BACK:
+                    case KeyEvent.KEYCODE_ESCAPE:
+                    case KeyEvent.KEYCODE_BUTTON_B:
+                        if (mainKeyboardView.handleBackKey()) {
+                            return true;
+                        }
+                        break;
+                    case KeyEvent.KEYCODE_BUTTON_X:
+                    case KeyEvent.KEYCODE_MEDIA_REWIND:
+                        onReleaseKey(Constants.CODE_DELETE, false);
+                        return true;
+                    case KeyEvent.KEYCODE_BUTTON_Y:
+                    case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                        onReleaseKey(Constants.CODE_SPACE, false);
+                        return true;
+                    case KeyEvent.KEYCODE_BUTTON_L1:
+                    case KeyEvent.KEYCODE_PROG_RED:
+                    case KeyEvent.KEYCODE_BUTTON_R1:
+                    case KeyEvent.KEYCODE_PROG_GREEN:
+                    case KeyEvent.KEYCODE_PROG_YELLOW:
+                    case KeyEvent.KEYCODE_CHANNEL_DOWN:
+                    case KeyEvent.KEYCODE_PAGE_DOWN:
+                    case KeyEvent.KEYCODE_CHANNEL_UP:
+                    case KeyEvent.KEYCODE_PAGE_UP:
+                        return true;
+                }
+            }
+        }
+        return super.onKeyUp(keyCode, event);
     }
 
     // This method is public for testability of LatinIME, but also in the future it should

@@ -23,5 +23,11 @@
 >
     <Key
         latin:keyStyle="spaceKeyStyle"
-        latin:keyWidth="30%p" />
+        latin:keyWidth="16%p" />
+    <Key
+        latin:keyStyle="cursorLeftKeyStyle"
+        latin:keyWidth="7%p" />
+    <Key
+        latin:keyStyle="cursorRightKeyStyle"
+        latin:keyWidth="7%p" />
 </merge>

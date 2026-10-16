@@ -154,4 +154,16 @@
         latin:styleName="backFromMoreSymbolKeyStyle"
         latin:keySpec="!text/keylabel_to_symbol|!code/key_shift"
         latin:parentStyle="baseForLayoutSwitchKeyStyle" />
+    <key-style
+        latin:styleName="cursorLeftKeyStyle"
+        latin:keySpec="&#x25C0;|!code/key_left"
+        latin:keyLabelFlags="preserveCase|followFunctionalTextColor"
+        latin:keyActionFlags="isRepeatable|noKeyPreview"
+        latin:backgroundType="functional" />
+    <key-style
+        latin:styleName="cursorRightKeyStyle"
+        latin:keySpec="&#x25B6;|!code/key_right"
+        latin:keyLabelFlags="preserveCase|followFunctionalTextColor"
+        latin:keyActionFlags="isRepeatable|noKeyPreview"
+        latin:backgroundType="functional" />
 </merge>

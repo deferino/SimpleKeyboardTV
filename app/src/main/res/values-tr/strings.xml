@@ -61,4 +61,5 @@
     <string name="change_keyboard">Klavyeyi değiştir</string>
     <string name="privacy_policy">Gizlilik Politikası</string>
     <string name="license">Lisans</string>
+    <string name="test_keyboard">Klavyeyi test et</string>
 </resources>

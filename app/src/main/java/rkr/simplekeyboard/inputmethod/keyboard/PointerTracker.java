@@ -192,6 +192,18 @@ public final class PointerTracker implements PointerTrackerQueue.Element {
         }
     }
 
+    public static void detachMoreKeysPanelsForDpad() {
+        final int trackersSize = sTrackers.size();
+        for (int i = 0; i < trackersSize; ++i) {
+            final PointerTracker tracker = sTrackers.get(i);
+            if (tracker.mMoreKeysPanel != null) {
+                tracker.mMoreKeysPanel = null;
+                sTimerProxy.cancelKeyTimersOf(tracker);
+                tracker.cancelKeyTracking();
+            }
+        }
+    }
+
     private PointerTracker(final int id) {
         mPointerId = id;
     }

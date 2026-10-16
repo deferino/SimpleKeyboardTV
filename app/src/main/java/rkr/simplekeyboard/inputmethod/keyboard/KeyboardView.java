@@ -28,6 +28,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -114,6 +115,9 @@ public class KeyboardView extends View {
     private final Canvas mOffscreenCanvas = new Canvas();
     private final Paint mPaint = new Paint();
     private final Paint.FontMetrics mFontMetrics = new Paint.FontMetrics();
+    private Key mFocusedKey;
+    private final Paint mFocusPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final RectF mFocusRect = new RectF();
 
     public KeyboardView(final Context context, final AttributeSet attrs) {
         this(context, attrs, R.attr.keyboardViewStyle);
@@ -184,6 +188,24 @@ public class KeyboardView extends View {
      */
     public Keyboard getKeyboard() {
         return mKeyboard;
+    }
+
+    public void setFocusedKey(final Key key) {
+        if (mFocusedKey == key) {
+            return;
+        }
+        final Key oldKey = mFocusedKey;
+        mFocusedKey = key;
+        if (oldKey != null) {
+            invalidateKey(oldKey);
+        }
+        if (mFocusedKey != null) {
+            invalidateKey(mFocusedKey);
+        }
+    }
+
+    public Key getFocusedKey() {
+        return mFocusedKey;
     }
 
     protected float getVerticalCorrection() {
@@ -320,10 +342,30 @@ public class KeyboardView extends View {
             if (background != null) {
                 onDrawKeyBackground(key, canvas, background);
             }
+            if (key == mFocusedKey) {
+                onDrawKeyFocusHighlight(key, canvas);
+            }
         }
         onDrawKeyTopVisuals(key, canvas, paint, params);
 
         canvas.translate(-keyDrawX, -keyDrawY);
+    }
+
+    protected void onDrawKeyFocusHighlight(final Key key, final Canvas canvas) {
+        final float density = getResources().getDisplayMetrics().density;
+        final float strokeWidth = Math.max(3.0f, density * 2.5f);
+        final float inset = strokeWidth * 0.6f;
+        final float radius = Math.max(6.0f, density * 6.0f);
+        mFocusRect.set(inset, inset, key.getWidth() - inset, key.getHeight() - inset);
+
+        mFocusPaint.setStyle(Paint.Style.FILL);
+        mFocusPaint.setColor(0x4500E5FF);
+        canvas.drawRoundRect(mFocusRect, radius, radius, mFocusPaint);
+
+        mFocusPaint.setStyle(Paint.Style.STROKE);
+        mFocusPaint.setStrokeWidth(strokeWidth);
+        mFocusPaint.setColor(0xFF00E5FF);
+        canvas.drawRoundRect(mFocusRect, radius, radius, mFocusPaint);
     }
 
     // Draw key background.

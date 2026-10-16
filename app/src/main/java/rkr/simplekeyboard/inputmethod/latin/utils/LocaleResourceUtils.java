@@ -68,13 +68,14 @@ public final class LocaleResourceUtils {
     private static void initLocked(final Context context) {
         final Resources res = context.getResources();
         sResources = res;
+        final String resourcePackageName = res.getResourcePackageName(R.string.english_ime_name);
 
         final String[] exceptionalLocaleInRootLocale = res.getStringArray(
                 R.array.locale_displayed_in_root_locale);
         for (int i = 0; i < exceptionalLocaleInRootLocale.length; i++) {
             final String localeString = exceptionalLocaleInRootLocale[i];
             final String resourceName = LOCALE_NAME_RESOURCE_IN_ROOT_LOCALE_PREFIX + localeString;
-            final int resId = res.getIdentifier(resourceName, null, RESOURCE_PACKAGE_NAME);
+            final int resId = res.getIdentifier(resourceName, null, resourcePackageName);
             sExceptionalLocaleDisplayedInRootLocale.put(localeString, resId);
         }
 
@@ -82,7 +83,7 @@ public final class LocaleResourceUtils {
         for (int i = 0; i < exceptionalLocales.length; i++) {
             final String localeString = exceptionalLocales[i];
             final String resourceName = LOCALE_NAME_RESOURCE_PREFIX + localeString;
-            final int resId = res.getIdentifier(resourceName, null, RESOURCE_PACKAGE_NAME);
+            final int resId = res.getIdentifier(resourceName, null, resourcePackageName);
             sExceptionalLocaleToNameIdsMap.put(localeString, resId);
         }
     }

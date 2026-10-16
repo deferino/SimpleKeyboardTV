@@ -30,7 +30,13 @@
                 latin:keyStyle="languageSwitchKeyStyle" />
             <Key
                 latin:keyStyle="spaceKeyStyle"
-                latin:keyWidth="30%p" />
+                latin:keyWidth="14%p" />
+            <Key
+                latin:keyStyle="cursorLeftKeyStyle"
+                latin:keyWidth="8%p" />
+            <Key
+                latin:keyStyle="cursorRightKeyStyle"
+                latin:keyWidth="8%p" />
             <Key
                 latin:keyStyle="zwnjKeyStyle" />
         </case>
@@ -40,7 +46,13 @@
             >
             <Key
                 latin:keyStyle="spaceKeyStyle"
-                latin:keyWidth="40%p" />
+                latin:keyWidth="24%p" />
+            <Key
+                latin:keyStyle="cursorLeftKeyStyle"
+                latin:keyWidth="8%p" />
+            <Key
+                latin:keyStyle="cursorRightKeyStyle"
+                latin:keyWidth="8%p" />
             <Key
                 latin:keyStyle="zwnjKeyStyle" />
         </case>
@@ -51,12 +63,24 @@
                 latin:keyStyle="languageSwitchKeyStyle" />
             <Key
                 latin:keyStyle="spaceKeyStyle"
-                latin:keyWidth="40%p" />
+                latin:keyWidth="24%p" />
+            <Key
+                latin:keyStyle="cursorLeftKeyStyle"
+                latin:keyWidth="8%p" />
+            <Key
+                latin:keyStyle="cursorRightKeyStyle"
+                latin:keyWidth="8%p" />
         </case>
         <default>
             <Key
                 latin:keyStyle="spaceKeyStyle"
-                latin:keyWidth="50%p" />
+                latin:keyWidth="34%p" />
+            <Key
+                latin:keyStyle="cursorLeftKeyStyle"
+                latin:keyWidth="8%p" />
+            <Key
+                latin:keyStyle="cursorRightKeyStyle"
+                latin:keyWidth="8%p" />
         </default>
     </switch>
 </merge>

@@ -228,7 +228,7 @@ public final class Settings extends BroadcastReceiver implements SharedPreferenc
     }
 
     public static boolean readUseOnScreenKeyboard(final SharedPreferences prefs) {
-        return prefs.getBoolean(PREF_USE_ON_SCREEN, false);
+        return prefs.getBoolean(PREF_USE_ON_SCREEN, true);
     }
 
     public static boolean readEnableImeSwitch(final SharedPreferences prefs) {
@@ -325,6 +325,10 @@ public final class Settings extends BroadcastReceiver implements SharedPreferenc
     }
 
     public static boolean readHasHardwareKeyboard(final Configuration conf) {
+        if ((conf.uiMode & Configuration.UI_MODE_TYPE_MASK)
+                == Configuration.UI_MODE_TYPE_TELEVISION) {
+            return false;
+        }
         // The standard way of finding out whether we have a hardware keyboard. This code is taken
         // from InputMethodService#onEvaluateInputShown, which canonically determines this.
         // In a nutshell, we have a keyboard if the configuration says the type of hardware keyboard

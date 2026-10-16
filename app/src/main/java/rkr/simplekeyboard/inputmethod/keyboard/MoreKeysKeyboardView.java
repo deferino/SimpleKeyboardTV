@@ -99,6 +99,7 @@ public class MoreKeysKeyboardView extends KeyboardView implements MoreKeysPanel 
 
         mOriginX = x + container.getPaddingLeft();
         mOriginY = y + container.getPaddingTop();
+        setFocusedKey(DpadNavigator.findDefaultKey(getKeyboard()));
         controller.onShowMoreKeysPanel(this);
     }
 
@@ -113,6 +114,13 @@ public class MoreKeysKeyboardView extends KeyboardView implements MoreKeysPanel 
     public void onDownEvent(final int x, final int y, final int pointerId) {
         mActivePointerId = pointerId;
         mCurrentKey = detectKey(x, y);
+        if (mCurrentKey == null) {
+            mCurrentKey = DpadNavigator.findDefaultKey(getKeyboard());
+            if (mCurrentKey != null) {
+                updatePressKeyGraphics(mCurrentKey);
+            }
+        }
+        setFocusedKey(mCurrentKey);
     }
 
     @Override
@@ -122,6 +130,7 @@ public class MoreKeysKeyboardView extends KeyboardView implements MoreKeysPanel 
         }
         final boolean hasOldKey = (mCurrentKey != null);
         mCurrentKey = detectKey(x, y);
+        setFocusedKey(mCurrentKey);
         if (hasOldKey && mCurrentKey == null) {
             // A more keys keyboard is canceled when detecting no key.
             mController.onCancelMoreKeysPanel();
@@ -141,6 +150,42 @@ public class MoreKeysKeyboardView extends KeyboardView implements MoreKeysPanel 
             onKeyInput(mCurrentKey);
             mCurrentKey = null;
         }
+        setFocusedKey(null);
+    }
+
+    public boolean moveDpadFocus(final int keyCode) {
+        final Keyboard keyboard = getKeyboard();
+        if (keyboard == null) {
+            return false;
+        }
+        final Key baseKey = (mCurrentKey != null) ? mCurrentKey : getFocusedKey();
+        final int preferredX = (baseKey != null) ? (baseKey.getX() + baseKey.getWidth() / 2) : -1;
+        final Key nextKey = DpadNavigator.findNextKey(keyboard, baseKey, keyCode, preferredX);
+        if (nextKey == null) {
+            return false;
+        }
+        if (mCurrentKey != null && mCurrentKey != nextKey) {
+            updateReleaseKeyGraphics(mCurrentKey);
+        }
+        mCurrentKey = nextKey;
+        updatePressKeyGraphics(mCurrentKey);
+        setFocusedKey(mCurrentKey);
+        return true;
+    }
+
+    public boolean confirmDpadSelection() {
+        Key target = (mCurrentKey != null) ? mCurrentKey : getFocusedKey();
+        if (target == null) {
+            target = DpadNavigator.findDefaultKey(getKeyboard());
+        }
+        if (target != null) {
+            updateReleaseKeyGraphics(target);
+            onKeyInput(target);
+            mCurrentKey = null;
+        }
+        setFocusedKey(null);
+        dismissMoreKeysPanel();
+        return true;
     }
 
     /**
@@ -149,7 +194,7 @@ public class MoreKeysKeyboardView extends KeyboardView implements MoreKeysPanel 
     protected void onKeyInput(final Key key) {
         final int code = key.getCode();
         if (code == Constants.CODE_OUTPUT_TEXT) {
-            mListener.onTextInput(mCurrentKey.getOutputText());
+            mListener.onTextInput(key.getOutputText());
         } else if (code != Constants.CODE_UNSPECIFIED) {
             mListener.onCodeInput(code, Constants.NOT_A_COORDINATE, Constants.NOT_A_COORDINATE, false /* isKeyRepeat */);
         }
@@ -188,6 +233,11 @@ public class MoreKeysKeyboardView extends KeyboardView implements MoreKeysPanel 
         if (!isShowingInParent()) {
             return;
         }
+        if (mCurrentKey != null) {
+            updateReleaseKeyGraphics(mCurrentKey);
+            mCurrentKey = null;
+        }
+        setFocusedKey(null);
         mController.onDismissMoreKeysPanel();
     }
 
