@@ -27,7 +27,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
-import android.preference.SwitchPreference;
 import android.util.Log;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -75,16 +74,6 @@ public final class SettingsFragment extends InputMethodSettingsFragment {
                 return true;
             }
         });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        final Preference centeredPref = findPreference(Settings.PREF_CENTERED_KEYBOARD);
-        if (centeredPref instanceof SwitchPreference) {
-            ((SwitchPreference) centeredPref).setChecked(
-                    Settings.readCenteredKeyboardEnabled(getPreferenceManager().getSharedPreferences()));
-        }
     }
 
     private void showTestKeyboardDialog() {

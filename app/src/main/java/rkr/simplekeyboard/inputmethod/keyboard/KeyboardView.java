@@ -201,20 +201,23 @@ public class KeyboardView extends View {
         final float density = getResources().getDisplayMetrics().density;
         if (centered) {
             final int padH = Math.round(12.0f * density);
-            final int padV = Math.round(10.0f * density);
-            final int bottomMargin = Math.round(22.0f * density);
-            final float cornerRadius = 20.0f * density;
-            setPadding(padH, padV, padH, padV);
+            final int padTop = Math.round(10.0f * density);
+            final int padBottom = Math.round(10.0f * density);
+            final float cornerRadius = 16.0f * density;
+            setPadding(padH, padTop, padH, padBottom);
             if (getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
                 final ViewGroup.MarginLayoutParams lp =
                         (ViewGroup.MarginLayoutParams) getLayoutParams();
-                lp.bottomMargin = bottomMargin;
+                lp.bottomMargin = 0;
                 setLayoutParams(lp);
             }
             setOutlineProvider(new ViewOutlineProvider() {
                 @Override
                 public void getOutline(final View view, final Outline outline) {
-                    outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), cornerRadius);
+                    outline.setRoundRect(
+                            0, 0, view.getWidth(),
+                            view.getHeight() + Math.round(cornerRadius),
+                            cornerRadius);
                 }
             });
             setClipToOutline(true);
@@ -303,8 +306,10 @@ public class KeyboardView extends View {
         final float density = getResources().getDisplayMetrics().density;
         final float strokeWidth = Math.max(2.0f, density * 1.5f);
         final float halfStroke = strokeWidth * 0.5f;
-        final float cornerRadius = 20.0f * density;
-        mCardBorderRect.set(halfStroke, halfStroke, getWidth() - halfStroke, getHeight() - halfStroke);
+        final float cornerRadius = 16.0f * density;
+        mCardBorderRect.set(
+                halfStroke, halfStroke,
+                getWidth() - halfStroke, getHeight() + cornerRadius);
         mCardBorderPaint.setStyle(Paint.Style.STROKE);
         mCardBorderPaint.setStrokeWidth(strokeWidth);
         mCardBorderPaint.setColor(0x38FFFFFF);

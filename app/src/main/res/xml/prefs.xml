@@ -28,11 +28,6 @@
         android:fragment="rkr.simplekeyboard.inputmethod.latin.settings.AppearanceSettingsFragment"
         android:title="@string/settings_screen_appearance"
         android:key="screen_appearance" />
-    <SwitchPreference
-        android:key="pref_centered_keyboard"
-        android:title="@string/centered_keyboard"
-        android:summary="@string/centered_keyboard_summary"
-        android:defaultValue="true" />
     <Preference
         android:title="@string/test_keyboard"
         android:key="test_keyboard" />
