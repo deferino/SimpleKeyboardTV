@@ -24,6 +24,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.PorterDuff;
@@ -33,6 +34,8 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 
 import java.util.HashSet;
 
@@ -118,6 +121,9 @@ public class KeyboardView extends View {
     private Key mFocusedKey;
     private final Paint mFocusPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF mFocusRect = new RectF();
+    private boolean mCenteredMode = false;
+    private final Paint mCardBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final RectF mCardBorderRect = new RectF();
 
     public KeyboardView(final Context context, final AttributeSet attrs) {
         this(context, attrs, R.attr.keyboardViewStyle);
@@ -190,6 +196,44 @@ public class KeyboardView extends View {
         return mKeyboard;
     }
 
+    public void setCenteredMode(final boolean centered) {
+        mCenteredMode = centered;
+        final float density = getResources().getDisplayMetrics().density;
+        if (centered) {
+            final int padH = Math.round(12.0f * density);
+            final int padV = Math.round(10.0f * density);
+            final int bottomMargin = Math.round(22.0f * density);
+            final float cornerRadius = 20.0f * density;
+            setPadding(padH, padV, padH, padV);
+            if (getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+                final ViewGroup.MarginLayoutParams lp =
+                        (ViewGroup.MarginLayoutParams) getLayoutParams();
+                lp.bottomMargin = bottomMargin;
+                setLayoutParams(lp);
+            }
+            setOutlineProvider(new ViewOutlineProvider() {
+                @Override
+                public void getOutline(final View view, final Outline outline) {
+                    outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), cornerRadius);
+                }
+            });
+            setClipToOutline(true);
+            setElevation(16.0f * density);
+        } else {
+            setPadding(0, 0, 0, 0);
+            if (getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+                final ViewGroup.MarginLayoutParams lp =
+                        (ViewGroup.MarginLayoutParams) getLayoutParams();
+                lp.bottomMargin = 0;
+                setLayoutParams(lp);
+            }
+            setClipToOutline(false);
+            setElevation(0.0f);
+        }
+        invalidateAllKeys();
+        requestLayout();
+    }
+
     public void setFocusedKey(final Key key) {
         if (mFocusedKey == key) {
             return;
@@ -234,6 +278,9 @@ public class KeyboardView extends View {
         super.onDraw(canvas);
         if (canvas.isHardwareAccelerated()) {
             onDrawKeyboard(canvas);
+            if (mCenteredMode) {
+                drawCenteredCardBorder(canvas);
+            }
             return;
         }
 
@@ -247,6 +294,21 @@ public class KeyboardView extends View {
             onDrawKeyboard(mOffscreenCanvas);
         }
         canvas.drawBitmap(mOffscreenBuffer, 0.0f, 0.0f, null);
+        if (mCenteredMode) {
+            drawCenteredCardBorder(canvas);
+        }
+    }
+
+    private void drawCenteredCardBorder(final Canvas canvas) {
+        final float density = getResources().getDisplayMetrics().density;
+        final float strokeWidth = Math.max(2.0f, density * 1.5f);
+        final float halfStroke = strokeWidth * 0.5f;
+        final float cornerRadius = 20.0f * density;
+        mCardBorderRect.set(halfStroke, halfStroke, getWidth() - halfStroke, getHeight() - halfStroke);
+        mCardBorderPaint.setStyle(Paint.Style.STROKE);
+        mCardBorderPaint.setStrokeWidth(strokeWidth);
+        mCardBorderPaint.setColor(0x38FFFFFF);
+        canvas.drawRoundRect(mCardBorderRect, cornerRadius, cornerRadius, mCardBorderPaint);
     }
 
     private boolean maybeAllocateOffscreenBuffer() {

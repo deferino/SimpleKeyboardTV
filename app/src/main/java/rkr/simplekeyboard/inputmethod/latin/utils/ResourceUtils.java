@@ -37,9 +37,22 @@ public final class ResourceUtils {
         // This utility class is not publicly instantiable.
     }
 
+    private static final float CENTERED_KEYBOARD_WIDTH_SCALE = 0.48f;
+    private static final float CENTERED_KEYBOARD_HEIGHT_SCALE = 0.88f;
+
+    public static int getKeyboardWidth(final int maxWidth, final SettingsValues settingsValues) {
+        if (settingsValues.mCenteredKeyboardEnabled) {
+            return Math.round(maxWidth * CENTERED_KEYBOARD_WIDTH_SCALE);
+        }
+        return maxWidth;
+    }
+
     public static int getKeyboardHeight(final Resources res, final SettingsValues settingsValues) {
         final int defaultKeyboardHeight = getDefaultKeyboardHeight(res);
         float scale = settingsValues.mKeyboardHeightScale;
+        if (settingsValues.mCenteredKeyboardEnabled) {
+            scale *= CENTERED_KEYBOARD_HEIGHT_SCALE;
+        }
         return (int)(defaultKeyboardHeight * scale);
     }
 

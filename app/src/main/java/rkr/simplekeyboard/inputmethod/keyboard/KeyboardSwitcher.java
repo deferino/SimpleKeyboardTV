@@ -112,7 +112,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         final KeyboardLayoutSet.Builder builder = new KeyboardLayoutSet.Builder(
                 mThemeContext, editorInfo);
         final Resources res = mThemeContext.getResources();
-        final int keyboardWidth = mLatinIME.getMaxWidth();
+        final int keyboardWidth = ResourceUtils.getKeyboardWidth(mLatinIME.getMaxWidth(), settingsValues);
         final int keyboardHeight = ResourceUtils.getKeyboardHeight(res, settingsValues);
         final int keyboardBottomOffset = ResourceUtils.getKeyboardBottomOffset(res, settingsValues);
         builder.setKeyboardTheme(mKeyboardTheme.mThemeId);
@@ -252,6 +252,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         final int visibility =  isImeSuppressedByHardwareKeyboard(settingsValues, toggleState)
                 ? View.GONE : View.VISIBLE;
         mKeyboardView.setVisibility(visibility);
+        mKeyboardView.setCenteredMode(settingsValues.mCenteredKeyboardEnabled);
     }
 
     public enum KeyboardSwitchState {

@@ -338,6 +338,8 @@ public final class MainKeyboardView extends KeyboardView implements MoreKeysPane
 
         locatePreviewPlacerView();
         getLocationInWindow(mOriginCoords);
+        mOriginCoords[0] += getPaddingLeft();
+        mOriginCoords[1] += getPaddingTop();
         final int backgroundColor = mTheme.mCustomColorSupport ? mCustomColor : Color.TRANSPARENT;
         mKeyPreviewChoreographer.placeAndShowKeyPreview(key, keyboard.mIconsSet, getKeyDrawParams(),
                 mOriginCoords, mDrawingPreviewPlacerView, isHardwareAccelerated(), backgroundColor);
@@ -421,15 +423,15 @@ public final class MainKeyboardView extends KeyboardView implements MoreKeysPane
         // The more keys keyboard is usually horizontally aligned with the center of the parent key.
         // If showMoreKeysKeyboardAtTouchedPoint is true and the key preview is disabled, the more
         // keys keyboard is placed at the touch point of the parent key.
-        final int pointX = (mConfigShowMoreKeysKeyboardAtTouchedPoint && !keyPreviewEnabled)
+        final int pointX = ((mConfigShowMoreKeysKeyboardAtTouchedPoint && !keyPreviewEnabled)
                 ? CoordinateUtils.x(lastCoords)
-                : key.getX() + key.getWidth() / 2;
+                : key.getX() + key.getWidth() / 2) + getPaddingLeft();
         // The more keys keyboard is usually vertically aligned with the top edge of the parent key
         // (plus vertical gap). If the key preview is enabled, the more keys keyboard is vertically
         // aligned with the bottom edge of the visible part of the key preview.
         // {@code mPreviewVisibleOffset} has been set appropriately in
         // {@link KeyboardView#showKeyPreview(PointerTracker)}.
-        final int pointY = key.getY() + mKeyPreviewDrawParams.getVisibleOffset()
+        final int pointY = key.getY() + getPaddingTop() + mKeyPreviewDrawParams.getVisibleOffset()
                 + Math.round(moreKeysKeyboard.mBottomPadding);
         moreKeysKeyboardView.showMoreKeysPanel(this, this, pointX, pointY, mKeyboardActionListener);
         return moreKeysKeyboardView;

@@ -128,4 +128,6 @@
     <string name="privacy_policy">Privacy Policy</string>
     <string name="license">License</string>
     <string name="test_keyboard">Test keyboard</string>
+    <string name="centered_keyboard">Centered compact keyboard (Gboard TV style)</string>
+    <string name="centered_keyboard_summary">Display the keyboard as a compact floating card in the center of the screen</string>
 </resources>

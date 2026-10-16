@@ -23,6 +23,11 @@
         android:fragment="rkr.simplekeyboard.inputmethod.latin.settings.ThemeSettingsFragment"
         android:key="screen_theme"
         android:title="@string/settings_screen_theme" />
+    <SwitchPreference
+        android:key="pref_centered_keyboard"
+        android:title="@string/centered_keyboard"
+        android:summary="@string/centered_keyboard_summary"
+        android:defaultValue="true" />
     <rkr.simplekeyboard.inputmethod.latin.settings.ColorDialogPreference
         android:key="pref_keyboard_color"
         android:title="@string/keyboard_color" />

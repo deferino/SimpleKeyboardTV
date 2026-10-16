@@ -28,6 +28,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.inputmethodservice.InputMethodService;
 import android.media.AudioManager;
 import android.os.Build;
@@ -42,6 +43,7 @@ import android.util.Printer;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowInsetsController;
@@ -441,22 +443,13 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
             mInputLogic.mConnection.reloadTextCache(editorInfo, restarting);
         }
 
-        if (isDifferentTextField ||
-                !currentSettingsValues.hasSameOrientation(getResources().getConfiguration())) {
-            loadSettings();
-        }
+        loadSettings();
+        currentSettingsValues = mSettings.getCurrent();
         if (isDifferentTextField) {
             mainKeyboardView.closing();
-            currentSettingsValues = mSettings.getCurrent();
-
-            switcher.loadKeyboard(editorInfo, currentSettingsValues, getCurrentAutoCapsState(),
-                    getCurrentRecapitalizeState());
-        } else {
-            // TODO: Come up with a more comprehensive way to reset the keyboard layout when
-            // a keyboard layout set doesn't get reloaded in this method.
-            switcher.resetKeyboardStateToAlphabet(getCurrentAutoCapsState(),
-                    getCurrentRecapitalizeState());
         }
+        switcher.loadKeyboard(editorInfo, currentSettingsValues, getCurrentAutoCapsState(),
+                getCurrentRecapitalizeState());
 
         if (TRACE) Debug.startMethodTracing("/data/trace/latinime");
     }
@@ -547,12 +540,18 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
             outInsets.visibleTopInsets = inputHeight;
             return;
         }
-        final int visibleTopY = inputHeight - visibleKeyboardView.getHeight();
+        int bottomMargin = 0;
+        if (visibleKeyboardView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+            bottomMargin = ((ViewGroup.MarginLayoutParams) visibleKeyboardView.getLayoutParams()).bottomMargin;
+        }
+        final int visibleTopY = inputHeight - visibleKeyboardView.getHeight() - bottomMargin;
         // Need to set expanded touchable region only if a keyboard view is being shown.
         if (visibleKeyboardView.isShown()) {
-            final int touchLeft = 0;
+            final int touchLeft = mKeyboardSwitcher.isShowingMoreKeysPanel()
+                    ? 0 : visibleKeyboardView.getLeft();
             final int touchTop = mKeyboardSwitcher.isShowingMoreKeysPanel() ? 0 : visibleTopY;
-            final int touchRight = visibleKeyboardView.getWidth();
+            final int touchRight = mKeyboardSwitcher.isShowingMoreKeysPanel()
+                    ? mInputView.getWidth() : visibleKeyboardView.getRight();
             final int touchBottom = inputHeight
                     // Extend touchable region below the keyboard.
                     + EXTENDED_TOUCHABLE_REGION_HEIGHT;
@@ -1075,7 +1074,8 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
                 return;
             }
             final SharedPreferences prefs = PreferenceManagerCompat.getDeviceSharedPreferences(this);
-            final int keyboardColor = Settings.readKeyboardColor(prefs, this);
+            final int keyboardColor = Settings.readCenteredKeyboardEnabled(prefs)
+                    ? Color.TRANSPARENT : Settings.readKeyboardColor(prefs, this);
             window.setNavigationBarColor(keyboardColor);
             window.setNavigationBarContrastEnforced(false);
             final int flag = WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
