@@ -58,6 +58,7 @@ public final class Settings extends BroadcastReceiver implements SharedPreferenc
     public static final String PREF_KEYPRESS_SOUND_VOLUME = "pref_keypress_sound_volume";
     public static final String PREF_KEY_LONGPRESS_TIMEOUT = "pref_key_longpress_timeout";
     public static final String PREF_KEYBOARD_HEIGHT = "pref_keyboard_height";
+    public static final String PREF_KEYBOARD_WIDTH = "pref_keyboard_width";
     public static final String PREF_BOTTOM_OFFSET_PORTRAIT = "pref_bottom_offset_portrait";
     public static final String PREF_KEYBOARD_COLOR = "pref_keyboard_color";
     public static final String PREF_SHOW_SPECIAL_CHARS = "pref_show_special_chars";
@@ -65,6 +66,7 @@ public final class Settings extends BroadcastReceiver implements SharedPreferenc
     public static final String PREF_SPACE_SWIPE = "pref_space_swipe";
     public static final String PREF_DELETE_SWIPE = "pref_delete_swipe";
     public static final String PREF_CENTERED_KEYBOARD = "pref_centered_keyboard";
+    public static final String PREF_CENTERED_FLOATING = "pref_centered_floating";
 
     private static final float UNDEFINED_PREFERENCE_VALUE_FLOAT = -1.0f;
     private static final int UNDEFINED_PREFERENCE_VALUE_INT = -1;
@@ -155,6 +157,7 @@ public final class Settings extends BroadcastReceiver implements SharedPreferenc
                     case PREF_DELETE_SWIPE:
                     case PREF_SPACE_SWIPE:
                     case PREF_CENTERED_KEYBOARD:
+                    case PREF_CENTERED_FLOATING:
                     case PREF_VIBRATE_ON:
                     case PREF_SOUND_ON:
                     case PREF_POPUP_ON:
@@ -163,6 +166,7 @@ public final class Settings extends BroadcastReceiver implements SharedPreferenc
                         break;
                     case PREF_KEYPRESS_SOUND_VOLUME:
                     case PREF_KEYBOARD_HEIGHT:
+                    case PREF_KEYBOARD_WIDTH:
                         Log.i(TAG, "Loading restriction: " + key + "=" + appRestrictions.getInt(key));
                         prefsEditor.putFloat(key, appRestrictions.getInt(key) / 100f);
                         break;
@@ -257,6 +261,10 @@ public final class Settings extends BroadcastReceiver implements SharedPreferenc
         return prefs.getBoolean(PREF_CENTERED_KEYBOARD, true);
     }
 
+    public static boolean readCenteredFloatingEnabled(final SharedPreferences prefs) {
+        return prefs.getBoolean(PREF_CENTERED_FLOATING, false);
+    }
+
     public static String readPrefSubtypes(final SharedPreferences prefs) {
         return prefs.getString(PREF_ENABLED_SUBTYPES, "");
     }
@@ -293,6 +301,11 @@ public final class Settings extends BroadcastReceiver implements SharedPreferenc
     public static float readKeyboardHeight(final SharedPreferences prefs,
             final float defaultValue) {
         return prefs.getFloat(PREF_KEYBOARD_HEIGHT, defaultValue);
+    }
+
+    public static float readKeyboardWidth(final SharedPreferences prefs,
+            final float defaultValue) {
+        return prefs.getFloat(PREF_KEYBOARD_WIDTH, defaultValue);
     }
 
     public static int readBottomOffsetPortrait(final SharedPreferences prefs) {

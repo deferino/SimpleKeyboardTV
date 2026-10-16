@@ -42,7 +42,9 @@ public final class ResourceUtils {
 
     public static int getKeyboardWidth(final int maxWidth, final SettingsValues settingsValues) {
         if (settingsValues.mCenteredKeyboardEnabled) {
-            return Math.round(maxWidth * CENTERED_KEYBOARD_WIDTH_SCALE);
+            final float scale = Math.min(1.0f,
+                    CENTERED_KEYBOARD_WIDTH_SCALE * settingsValues.mKeyboardWidthScale);
+            return Math.round(maxWidth * scale);
         }
         return maxWidth;
     }

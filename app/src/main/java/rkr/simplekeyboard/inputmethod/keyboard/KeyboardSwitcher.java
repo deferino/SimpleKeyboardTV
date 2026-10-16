@@ -252,7 +252,9 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
         final int visibility =  isImeSuppressedByHardwareKeyboard(settingsValues, toggleState)
                 ? View.GONE : View.VISIBLE;
         mKeyboardView.setVisibility(visibility);
-        mKeyboardView.setCenteredMode(settingsValues.mCenteredKeyboardEnabled);
+        mKeyboardView.setCenteredMode(
+                settingsValues.mCenteredKeyboardEnabled,
+                settingsValues.mCenteredFloatingEnabled);
     }
 
     public enum KeyboardSwitchState {

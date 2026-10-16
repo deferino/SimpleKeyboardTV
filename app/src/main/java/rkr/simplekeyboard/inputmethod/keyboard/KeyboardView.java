@@ -122,6 +122,7 @@ public class KeyboardView extends View {
     private final Paint mFocusPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF mFocusRect = new RectF();
     private boolean mCenteredMode = false;
+    private boolean mFloatingMode = false;
     private final Paint mCardBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF mCardBorderRect = new RectF();
 
@@ -196,28 +197,29 @@ public class KeyboardView extends View {
         return mKeyboard;
     }
 
-    public void setCenteredMode(final boolean centered) {
+    public void setCenteredMode(final boolean centered, final boolean floating) {
         mCenteredMode = centered;
+        mFloatingMode = centered && floating;
         final float density = getResources().getDisplayMetrics().density;
         if (centered) {
             final int padH = Math.round(12.0f * density);
             final int padTop = Math.round(10.0f * density);
-            final int padBottom = Math.round(10.0f * density);
-            final float cornerRadius = 16.0f * density;
+            final int padBottom = Math.round((floating ? 12.0f : 10.0f) * density);
+            final float cornerRadius = (floating ? 20.0f : 16.0f) * density;
             setPadding(padH, padTop, padH, padBottom);
             if (getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
                 final ViewGroup.MarginLayoutParams lp =
                         (ViewGroup.MarginLayoutParams) getLayoutParams();
-                lp.bottomMargin = 0;
+                lp.bottomMargin = floating ? Math.round(22.0f * density) : 0;
                 setLayoutParams(lp);
             }
             setOutlineProvider(new ViewOutlineProvider() {
                 @Override
                 public void getOutline(final View view, final Outline outline) {
-                    outline.setRoundRect(
-                            0, 0, view.getWidth(),
-                            view.getHeight() + Math.round(cornerRadius),
-                            cornerRadius);
+                    final int bottom = floating
+                            ? view.getHeight()
+                            : view.getHeight() + Math.round(cornerRadius);
+                    outline.setRoundRect(0, 0, view.getWidth(), bottom, cornerRadius);
                 }
             });
             setClipToOutline(true);
@@ -306,10 +308,13 @@ public class KeyboardView extends View {
         final float density = getResources().getDisplayMetrics().density;
         final float strokeWidth = Math.max(2.0f, density * 1.5f);
         final float halfStroke = strokeWidth * 0.5f;
-        final float cornerRadius = 16.0f * density;
+        final float cornerRadius = (mFloatingMode ? 20.0f : 16.0f) * density;
+        final float bottom = mFloatingMode
+                ? getHeight() - halfStroke
+                : getHeight() + cornerRadius;
         mCardBorderRect.set(
                 halfStroke, halfStroke,
-                getWidth() - halfStroke, getHeight() + cornerRadius);
+                getWidth() - halfStroke, bottom);
         mCardBorderPaint.setStyle(Paint.Style.STROKE);
         mCardBorderPaint.setStrokeWidth(strokeWidth);
         mCardBorderPaint.setColor(0x38FFFFFF);

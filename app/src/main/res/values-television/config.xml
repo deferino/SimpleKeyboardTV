@@ -24,4 +24,5 @@
     <dimen name="config_default_keyboard_height">196dp</dimen>
     <fraction name="config_max_keyboard_height">42%p</fraction>
     <fraction name="config_min_keyboard_height">28%p</fraction>
+    <fraction name="config_key_preview_text_ratio">75%</fraction>
 </resources>

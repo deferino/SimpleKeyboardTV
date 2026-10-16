@@ -54,6 +54,11 @@
     <integer name="config_min_keyboar_height">50</integer>
     <integer name="config_keyboar_height_step">5</integer>
 
+    <!-- Keyboard width -->
+    <integer name="config_max_keyboard_width">150</integer>
+    <integer name="config_min_keyboard_width">50</integer>
+    <integer name="config_keyboard_width_step">5</integer>
+
     <!-- Bottom offset -->
     <integer name="config_max_bottom_offset_portrait">100</integer>
     <integer name="config_min_bottom_offset_portrait">0</integer>

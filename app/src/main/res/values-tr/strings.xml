@@ -63,5 +63,8 @@
     <string name="license">Lisans</string>
     <string name="test_keyboard">Klavyeyi test et</string>
     <string name="centered_keyboard">Ortalanmış kompakt klavye (Gboard TV stili)</string>
-    <string name="centered_keyboard_summary">Klavyeyi tüm ekran yerine ekranın ortasında kompakt kart olarak göster</string>
+    <string name="centered_keyboard_summary">Klavyeyi tüm ekran yerine ekranın ortasında kompakt olarak göster</string>
+    <string name="centered_floating">Yüzen klavye görünümü (alttan boşluklu)</string>
+    <string name="centered_floating_summary">Ortalanmış klavyeyi ekranın altına bitişik yerine alttan boşluklu yüzen kart olarak göster</string>
+    <string name="prefs_keyboard_width_settings">Klavye genişliği</string>
 </resources>

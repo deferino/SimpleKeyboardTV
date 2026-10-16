@@ -108,27 +108,33 @@ public final class KeyPreviewChoreographer {
     private void placeKeyPreview(final Key key, final KeyPreviewView keyPreviewView,
             final KeyboardIconsSet iconsSet, final KeyDrawParams drawParams,
             final int[] originCoords, final int backgroundColor) {
+        final int keyWidth = key.getWidth();
+        final int keyHeight = key.getHeight();
+        final int bottomPadding = keyHeight;
+        final int visibleHeight = Math.round(keyHeight * 1.15f);
+        final int previewHeight = visibleHeight + bottomPadding;
+        final int previewOffset = bottomPadding;
+        final int previewWidth = Math.min(
+                Math.round(keyWidth * 1.16f),
+                Math.round(keyHeight * 2.0f));
+
+        keyPreviewView.setPadding(0, 0, 0, bottomPadding);
         keyPreviewView.setPreviewVisual(key, iconsSet, drawParams, backgroundColor);
         keyPreviewView.measure(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        mParams.setGeometry(keyPreviewView);
-        final int previewWidth = Math.max(keyPreviewView.getMeasuredWidth(), mParams.mMinPreviewWidth);
-        final int previewHeight = mParams.mPreviewHeight;
-        final int keyWidth = key.getWidth();
+                View.MeasureSpec.makeMeasureSpec(previewWidth, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(previewHeight, View.MeasureSpec.EXACTLY));
+        mParams.setGeometry(keyPreviewView, previewWidth, previewHeight, previewOffset);
         // The key preview is horizontally aligned with the center of the visible part of the
-        // parent key. If it doesn't fit in this {@link KeyboardView}, it is moved inward to fit and
-        // the left/right background is used if such background is specified.
-        int previewX = key.getX() - (previewWidth - keyWidth) / 2
+        // parent key.
+        final int previewX = key.getX() - (previewWidth - keyWidth) / 2
                 + CoordinateUtils.x(originCoords);
         // The key preview is placed vertically above the top edge of the parent key with an
-        // arbitrary offset.
-        final int previewY = key.getY() - previewHeight + mParams.mPreviewOffset
+        // offset so that its bottom aligns with the bottom of the parent key.
+        final int previewY = key.getY() - previewHeight + previewOffset
                 + CoordinateUtils.y(originCoords);
 
         ViewLayoutUtils.placeViewAt(
                 keyPreviewView, previewX, previewY, previewWidth, previewHeight);
-        //keyPreviewView.setPivotX(previewWidth / 2.0f);
-        //keyPreviewView.setPivotY(previewHeight);
     }
 
     void showKeyPreview(final Key key, final KeyPreviewView keyPreviewView,

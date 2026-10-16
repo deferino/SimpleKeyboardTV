@@ -83,18 +83,16 @@ public final class KeyPreviewDrawParams {
         return mVisibleOffset;
     }
 
-    public void setGeometry(final View previewTextView) {
-        final int previewWidth = Math.max(previewTextView.getMeasuredWidth(), mMinPreviewWidth);
-
-        // The width and height of visible part of the key preview background. The content marker
-        // of the background 9-patch have to cover the visible part of the background.
+    public void setGeometry(final View previewTextView, final int previewWidth,
+            final int previewHeight, final int previewOffset) {
+        // The width and height of visible part of the key preview background.
         mVisibleWidth = previewWidth - previewTextView.getPaddingLeft()
                 - previewTextView.getPaddingRight();
-        mVisibleHeight = mPreviewHeight - previewTextView.getPaddingTop()
+        mVisibleHeight = previewHeight - previewTextView.getPaddingTop()
                 - previewTextView.getPaddingBottom();
         // The distance between the top edge of the parent key and the bottom of the visible part
         // of the key preview background.
-        setVisibleOffset(mPreviewOffset - previewTextView.getPaddingBottom());
+        setVisibleOffset(previewOffset - previewTextView.getPaddingBottom());
     }
 
     public int getVisibleWidth() {

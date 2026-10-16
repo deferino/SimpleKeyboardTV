@@ -28,9 +28,22 @@
         android:title="@string/centered_keyboard"
         android:summary="@string/centered_keyboard_summary"
         android:defaultValue="true" />
+    <SwitchPreference
+        android:key="pref_centered_floating"
+        android:title="@string/centered_floating"
+        android:summary="@string/centered_floating_summary"
+        android:defaultValue="false"
+        android:dependency="pref_centered_keyboard" />
     <rkr.simplekeyboard.inputmethod.latin.settings.ColorDialogPreference
         android:key="pref_keyboard_color"
         android:title="@string/keyboard_color" />
+    <rkr.simplekeyboard.inputmethod.latin.settings.SeekBarDialogPreference
+        android:key="pref_keyboard_width"
+        android:title="@string/prefs_keyboard_width_settings"
+        android:dependency="pref_centered_keyboard"
+        latin:minValue="@integer/config_min_keyboard_width"
+        latin:maxValue="@integer/config_max_keyboard_width"
+        latin:stepValue="@integer/config_keyboard_width_step" />
     <rkr.simplekeyboard.inputmethod.latin.settings.SeekBarDialogPreference
         android:key="pref_keyboard_height"
         android:title="@string/prefs_keyboard_height_settings"

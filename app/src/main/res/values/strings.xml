@@ -129,5 +129,8 @@
     <string name="license">License</string>
     <string name="test_keyboard">Test keyboard</string>
     <string name="centered_keyboard">Centered compact keyboard (Gboard TV style)</string>
-    <string name="centered_keyboard_summary">Display the keyboard as a compact floating card in the center of the screen</string>
+    <string name="centered_keyboard_summary">Display the keyboard as a compact card in the center of the screen</string>
+    <string name="centered_floating">Floating keyboard style (bottom gap)</string>
+    <string name="centered_floating_summary">Float the centered keyboard above the bottom edge instead of attaching flush to the bottom</string>
+    <string name="prefs_keyboard_width_settings">Keyboard width</string>
 </resources>

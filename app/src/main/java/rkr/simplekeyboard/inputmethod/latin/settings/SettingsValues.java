@@ -50,6 +50,7 @@ public class SettingsValues {
     public final boolean mSpaceSwipeEnabled;
     public final boolean mDeleteSwipeEnabled;
     public final boolean mCenteredKeyboardEnabled;
+    public final boolean mCenteredFloatingEnabled;
 
     // From the input box
     public final InputAttributes mInputAttributes;
@@ -60,6 +61,7 @@ public class SettingsValues {
 
     // Debug settings
     public final float mKeyboardHeightScale;
+    public final float mKeyboardWidthScale;
 
     public final int mBottomOffsetPortrait;
 
@@ -86,6 +88,7 @@ public class SettingsValues {
         mKeypressSoundVolume = Settings.readKeypressSoundVolume(prefs);
         mKeyPreviewPopupDismissDelay = res.getInteger(R.integer.config_key_preview_linger_timeout);
         mKeyboardHeightScale = Settings.readKeyboardHeight(prefs, DEFAULT_SIZE_SCALE);
+        mKeyboardWidthScale = Settings.readKeyboardWidth(prefs, DEFAULT_SIZE_SCALE);
         mBottomOffsetPortrait = Settings.readBottomOffsetPortrait(prefs);
         mDisplayOrientation = res.getConfiguration().orientation;
         mShowSpecialChars = Settings.readShowSpecialChars(prefs);
@@ -93,6 +96,7 @@ public class SettingsValues {
         mSpaceSwipeEnabled = Settings.readSpaceSwipeEnabled(prefs);
         mDeleteSwipeEnabled = Settings.readDeleteSwipeEnabled(prefs);
         mCenteredKeyboardEnabled = Settings.readCenteredKeyboardEnabled(prefs);
+        mCenteredFloatingEnabled = Settings.readCenteredFloatingEnabled(prefs);
     }
 
     public boolean isWordSeparator(final int code) {
