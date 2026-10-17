@@ -774,16 +774,16 @@ public final class PointerTracker implements PointerTrackerQueue.Element {
             return;
         }
         final int code = key.getCode();
-        if (code == Constants.CODE_SPACE) {
-            // Long pressing the space key pastes clipboard content.
+        if (code == Constants.CODE_COPY) {
+            // Long pressing the copy key selects and copies all text.
             cancelKeyTracking();
-            sListener.onCodeInput(Constants.CODE_PASTE, Constants.NOT_A_COORDINATE,
+            sListener.onCodeInput(Constants.CODE_COPY_ALL, Constants.NOT_A_COORDINATE,
                     Constants.NOT_A_COORDINATE, false /* isKeyRepeat */);
             sListener.onReleaseKey(code, false /* withSliding */);
             return;
         }
-        if (code == Constants.CODE_LANGUAGE_SWITCH) {
-            // Long pressing the language switch key invokes IME switcher dialog.
+        if (code == Constants.CODE_SPACE || code == Constants.CODE_LANGUAGE_SWITCH) {
+            // Long pressing the space key invokes IME switcher dialog.
             if (sListener.onCustomRequest(Constants.CUSTOM_CODE_SHOW_INPUT_METHOD_PICKER)) {
                 cancelKeyTracking();
                 sListener.onReleaseKey(code, false /* withSliding */);

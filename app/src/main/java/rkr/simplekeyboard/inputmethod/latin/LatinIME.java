@@ -655,6 +655,16 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
             if (TextUtils.getLayoutDirectionFromLocale(getCurrentLayoutLocale()) == View.LAYOUT_DIRECTION_RTL)
                 steps = -steps;
 
+            if (mInputLogic.mConnection.isCopySelectionActive() && mInputLogic.mConnection.hasSelection()) {
+                final int target = steps < 0
+                        ? mInputLogic.mConnection.getExpectedSelectionStart()
+                        : mInputLogic.mConnection.getExpectedSelectionEnd();
+                mInputLogic.mConnection.clearCopySelectionActive();
+                mInputLogic.mConnection.setSelection(target, target);
+                hapticTickFeedback();
+                return;
+            }
+
             steps = mInputLogic.mConnection.getUnicodeSteps(steps, true);
             if (steps == 0) {
                 return;

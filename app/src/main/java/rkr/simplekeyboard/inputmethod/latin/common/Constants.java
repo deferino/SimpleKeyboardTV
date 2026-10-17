@@ -106,6 +106,8 @@ public final class Constants {
     public static final int CODE_UNSPECIFIED = -13;
     public static final int CODE_CURSOR_LEFT = -14;
     public static final int CODE_CURSOR_RIGHT = -15;
+    public static final int CODE_COPY = -16;
+    public static final int CODE_COPY_ALL = -17;
 
     public static boolean isLetterCode(final int code) {
         return code >= CODE_SPACE;
@@ -120,6 +122,8 @@ public final class Constants {
         case CODE_DELETE: return "delete";
         case CODE_SETTINGS: return "settings";
         case CODE_PASTE: return "paste";
+        case CODE_COPY: return "copy";
+        case CODE_COPY_ALL: return "copyAll";
         case CODE_ACTION_NEXT: return "actionNext";
         case CODE_ACTION_PREVIOUS: return "actionPrevious";
         case CODE_LANGUAGE_SWITCH: return "languageSwitch";

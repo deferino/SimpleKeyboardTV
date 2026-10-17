@@ -99,10 +99,14 @@
         latin:altCode="!code/key_space"
         latin:backgroundType="functional" />
     <key-style
+        latin:styleName="copyKeyStyle"
+        latin:keySpec="!icon/copy_key|!code/key_copy"
+        latin:keyActionFlags="noKeyPreview|enableLongPress"
+        latin:backgroundType="functional" />
+    <key-style
         latin:styleName="pasteKeyStyle"
         latin:keySpec="!icon/paste_key|!code/key_paste"
-        latin:keyActionFlags="noKeyPreview|altCodeWhileTyping"
-        latin:altCode="!code/key_paste"
+        latin:keyActionFlags="noKeyPreview"
         latin:backgroundType="functional" />
     <key-style
         latin:styleName="languageSwitchKeyStyle"

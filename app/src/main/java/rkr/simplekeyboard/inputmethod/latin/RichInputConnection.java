@@ -30,6 +30,8 @@ import android.os.Build;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.ExtractedText;
+import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.SurroundingText;
 
@@ -74,6 +76,7 @@ public final class RichInputConnection {
     private String mTextBeforeCursor = "";
     private String mTextAfterCursor = "";
     private String mTextSelection = "";
+    private boolean mIsCopySelectionActive = false;
 
     private final LatinIME mLatinIME;
     private InputConnection mIC;
@@ -234,6 +237,111 @@ public final class RichInputConnection {
         mTextBeforeCursor = "";
         mTextSelection = "";
         mTextAfterCursor = "";
+        mIsCopySelectionActive = false;
+    }
+
+    public boolean isCopySelectionActive() {
+        return mIsCopySelectionActive;
+    }
+
+    public void clearCopySelectionActive() {
+        mIsCopySelectionActive = false;
+    }
+
+    private CharSequence getEditorFullText() {
+        mIC = mLatinIME.getCurrentInputConnection();
+        if (!isConnected()) {
+            return null;
+        }
+        final ExtractedText et = mIC.getExtractedText(new ExtractedTextRequest(), 0);
+        if (et != null && et.text != null) {
+            return et.text;
+        }
+        final CharSequence before = mIC.getTextBeforeCursor(Constants.EDITOR_CONTENTS_CACHE_SIZE, 0);
+        final CharSequence selected = mIC.getSelectedText(0);
+        final CharSequence after = mIC.getTextAfterCursor(Constants.EDITOR_CONTENTS_CACHE_SIZE, 0);
+        final StringBuilder sb = new StringBuilder();
+        if (before != null) sb.append(before);
+        if (selected != null) sb.append(selected);
+        if (after != null) sb.append(after);
+        return sb.toString();
+    }
+
+    private void collapseCopySelectionIfNeeded() {
+        if (!mIsCopySelectionActive) {
+            return;
+        }
+        mIsCopySelectionActive = false;
+        final CharSequence fullText = getEditorFullText();
+        if (fullText != null) {
+            final int len = fullText.length();
+            mTextBeforeCursor = fullText.toString();
+            mTextSelection = "";
+            mTextAfterCursor = "";
+            mExpectedSelStart = len;
+            mExpectedSelEnd = len;
+            if (isConnected()) {
+                mIC.setSelection(len, len);
+            }
+        }
+    }
+
+    private void copyToClipboard(final CharSequence text) {
+        if (text == null || text.length() == 0) {
+            return;
+        }
+        final ClipboardManager clipboard = (ClipboardManager) mLatinIME.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard != null) {
+            clipboard.setPrimaryClip(ClipData.newPlainText("text", text));
+        }
+    }
+
+    public void copyFirstWord() {
+        final CharSequence fullText = getEditorFullText();
+        if (fullText == null || fullText.length() == 0) {
+            return;
+        }
+        final int len = fullText.length();
+        int start = 0;
+        while (start < len && Character.isWhitespace(fullText.charAt(start))) {
+            start++;
+        }
+        if (start >= len) {
+            return;
+        }
+        int end = start;
+        while (end < len && !Character.isWhitespace(fullText.charAt(end))) {
+            end++;
+        }
+        final CharSequence firstWord = fullText.subSequence(start, end);
+        mTextBeforeCursor = fullText.subSequence(0, start).toString();
+        mTextSelection = firstWord.toString();
+        mTextAfterCursor = fullText.subSequence(end, len).toString();
+        mExpectedSelStart = start;
+        mExpectedSelEnd = end;
+        if (isConnected()) {
+            mIC.setSelection(start, end);
+        }
+        mIsCopySelectionActive = true;
+        copyToClipboard(firstWord);
+    }
+
+    public void copyAllText() {
+        final CharSequence fullText = getEditorFullText();
+        if (fullText == null || fullText.length() == 0) {
+            return;
+        }
+        final int len = fullText.length();
+        mTextBeforeCursor = "";
+        mTextSelection = fullText.toString();
+        mTextAfterCursor = "";
+        mExpectedSelStart = 0;
+        mExpectedSelEnd = len;
+        if (isConnected()) {
+            mIC.setSelection(0, len);
+        }
+        mIsCopySelectionActive = true;
+        copyToClipboard(fullText);
     }
 
     /**
@@ -243,6 +351,7 @@ public final class RichInputConnection {
      * @param newCursorPosition The new cursor position around the text.
      */
     public void commitText(final CharSequence text, final int newCursorPosition) {
+        collapseCopySelectionIfNeeded();
         RichInputMethodManager.getInstance().resetSubtypeCycleOrder();
         mTextBeforeCursor += text;
         // TODO: the following is exceedingly error-prone. Right now when the cursor is in the
@@ -340,6 +449,7 @@ public final class RichInputConnection {
     }
 
     public void deleteSelectedText() {
+        mIsCopySelectionActive = false;
         if (mExpectedSelStart == mExpectedSelEnd) {
             Log.e(TAG, "deleteSelectedText called with text range not selected");
             return;
@@ -361,6 +471,7 @@ public final class RichInputConnection {
     }
 
     public void pasteClipboard() {
+        collapseCopySelectionIfNeeded();
         final ClipboardManager clipboard = (ClipboardManager) mLatinIME.getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipboard != null && clipboard.hasPrimaryClip()) {
             final ClipData clipData = clipboard.getPrimaryClip();
@@ -382,6 +493,7 @@ public final class RichInputConnection {
     public void sendKeyEvent(final KeyEvent keyEvent) {
         RichInputMethodManager.getInstance().resetSubtypeCycleOrder();
         if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+            collapseCopySelectionIfNeeded();
             // This method is only called for enter or backspace when speaking to old applications
             // (target SDK <= 15 (Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)), or for digits.
             // When talking to new applications we never use this method because it's inherently

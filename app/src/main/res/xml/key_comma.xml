@@ -31,25 +31,9 @@
                 latin:backgroundType="normal"
                 latin:keyStyle="settingsMoreKeysStyle" />
         </case>
-        <case
-            latin:mode="url"
-        >
-            <Key
-                latin:keySpec="/"
-                latin:keyStyle="settingsMoreKeysStyle" />
-        </case>
-        <case
-            latin:mode="email"
-        >
-            <Key
-                latin:keySpec="\@"
-                latin:keyStyle="settingsMoreKeysStyle" />
-        </case>
         <default>
             <Key
-                latin:keySpec="!text/keyspec_comma"
-                latin:keyLabelFlags="hasPopupHint"
-                latin:keyStyle="settingsMoreKeysStyle" />
+                latin:keyStyle="copyKeyStyle" />
         </default>
     </switch>
 </merge>
