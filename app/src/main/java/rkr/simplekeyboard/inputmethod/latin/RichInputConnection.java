@@ -364,19 +364,19 @@ public final class RichInputConnection {
         final ClipboardManager clipboard = (ClipboardManager) mLatinIME.getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipboard != null && clipboard.hasPrimaryClip()) {
             final ClipData clipData = clipboard.getPrimaryClip();
-            if (clipData != null && clipData.getItemCount() == 1) {
-                final String mimeType = clipData.getDescription().getMimeType(0);
-                if (MIMETYPE_TEXT_PLAIN.equals(mimeType) || MIMETYPE_TEXT_HTML.equals(mimeType)) {
-                    final CharSequence pasteData = clipData.getItemAt(0).getText();
-                    if (pasteData != null && pasteData.length() > 0) {
-                        mLatinIME.onTextInput(pasteData.toString());
-                        return;
-                    }
+            if (clipData != null && clipData.getItemCount() > 0) {
+                final CharSequence pasteData = clipData.getItemAt(0).coerceToText(mLatinIME);
+                if (pasteData != null && pasteData.length() > 0) {
+                    mLatinIME.onTextInput(pasteData.toString());
+                    return;
                 }
             }
         }
 
-        mIC.performContextMenuAction(android.R.id.paste);
+        mIC = mLatinIME.getCurrentInputConnection();
+        if (isConnected()) {
+            mIC.performContextMenuAction(android.R.id.paste);
+        }
     }
 
     public void sendKeyEvent(final KeyEvent keyEvent) {
