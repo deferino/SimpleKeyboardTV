@@ -31,8 +31,6 @@ import rkr.simplekeyboard.inputmethod.latin.AudioAndHapticFeedbackManager;
  * "Preferences" settings sub screen.
  *
  * This settings sub screen handles the following input preferences.
- * - Vibrate on keypress
- * - Keypress vibration duration
  * - Sound on keypress
  * - Keypress sound volume
  * - Popup on keypress
@@ -50,10 +48,6 @@ public final class KeyPressSettingsFragment extends SubScreenFragment {
         // singleton and utility classes may not have been initialized.  We have to call
         // initialization method of these classes here. See {@link LatinIME#onCreate()}.
         AudioAndHapticFeedbackManager.init(context);
-
-        if (!AudioAndHapticFeedbackManager.getInstance().hasVibrator()) {
-            removePreference(Settings.PREF_VIBRATE_ON);
-        }
 
         setupKeypressSoundVolumeSettings();
         setupKeyLongpressTimeoutSettings();

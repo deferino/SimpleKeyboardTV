@@ -37,7 +37,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import rkr.simplekeyboard.inputmethod.R;
 import rkr.simplekeyboard.inputmethod.compat.PreferenceManagerCompat;
 import rkr.simplekeyboard.inputmethod.keyboard.KeyboardTheme;
-import rkr.simplekeyboard.inputmethod.latin.AudioAndHapticFeedbackManager;
 import rkr.simplekeyboard.inputmethod.latin.InputAttributes;
 import rkr.simplekeyboard.inputmethod.latin.RichInputMethodManager;
 
@@ -48,7 +47,6 @@ public final class Settings extends BroadcastReceiver implements SharedPreferenc
     public static final String SCREEN_THEME = "screen_theme";
     // In the same order as xml/prefs.xml
     public static final String PREF_AUTO_CAP = "auto_cap";
-    public static final String PREF_VIBRATE_ON = "vibrate_on";
     public static final String PREF_SOUND_ON = "sound_on";
     public static final String PREF_POPUP_ON = "popup_on";
     public static final String PREF_SHOW_LANGUAGE_SWITCH_KEY = "pref_show_language_switch_key";
@@ -158,7 +156,6 @@ public final class Settings extends BroadcastReceiver implements SharedPreferenc
                     case PREF_SPACE_SWIPE:
                     case PREF_CENTERED_KEYBOARD:
                     case PREF_CENTERED_FLOATING:
-                    case PREF_VIBRATE_ON:
                     case PREF_SOUND_ON:
                     case PREF_POPUP_ON:
                         Log.i(TAG, "Loading restriction: " + key + "=" + appRestrictions.getBoolean(key));
@@ -213,13 +210,6 @@ public final class Settings extends BroadcastReceiver implements SharedPreferenc
             final Resources res) {
         return prefs.getBoolean(PREF_SOUND_ON,
                 res.getBoolean(R.bool.config_default_sound_enabled));
-    }
-
-    public static boolean readVibrationEnabled(final SharedPreferences prefs,
-            final Resources res) {
-        final boolean hasVibrator = AudioAndHapticFeedbackManager.getInstance().hasVibrator();
-        return hasVibrator && prefs.getBoolean(PREF_VIBRATE_ON,
-                res.getBoolean(R.bool.config_default_vibration_enabled));
     }
 
     public static boolean readKeyPreviewPopupEnabled(final SharedPreferences prefs,

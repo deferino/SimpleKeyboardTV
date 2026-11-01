@@ -6,7 +6,7 @@
 
 A small on-screen keyboard for Android TV that you drive with the remote's D-pad.
 It is an unofficial fork of [Simple Keyboard](https://github.com/rkkr/simple-keyboard) by rkkr, adapted for TVs.
-No ads, no tracking, no Internet permission: the only permission it asks for is Vibrate.
+No ads, no tracking, and no permissions at all (not even Internet).
 
 <p align="center">
   <img src="images/keyboard.png" alt="Keyboard on a TV screen" width="640">
@@ -50,7 +50,7 @@ by device, Android version and Gboard version.
 | Code in memory (code PSS) | 18.3 MB (18,308 KB) | 2.4 MB (2,480 KB) | ~7.4x lighter |
 | Background threads | 59-60 | 22-23 | ~37 fewer, less than half |
 | CPU, idle / typing | Idle 0-1%. While typing: word prediction, JNI dictionary lookup, Play Services | Idle 0.0%. While typing it only redraws the pressed key (`invalidateKey`) | Minimal CPU load |
-| Permissions / network | Internet and microphone permissions, Play Services integration | Only Vibrate. No Internet, fully offline | No network access, no background traffic |
+| Permissions / network | Internet and microphone permissions, Play Services integration | None. No Internet, fully offline | No network access, no background traffic |
 
 Gboard does a lot more (word prediction, dictionaries, voice, emoji, GIFs, cloud features), so this compares
 size and resource use, not features. Simple Keyboard TV only types text.
