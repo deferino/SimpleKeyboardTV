@@ -73,6 +73,14 @@ public class RadioButtonPreference extends Preference {
     }
 
     @Override
+    protected void onClick() {
+        // The D-pad centre/enter key of a TV remote ends up here (the list reports an item click
+        // for the focused row). Touch and mouse clicks are handled by the click listeners that
+        // onBindView() sets on the row and on the radio button.
+        callListenerOnRadioButtonClicked();
+    }
+
+    @Override
     protected void onBindView(final View view) {
         super.onBindView(view);
         mRadioButton = (RadioButton)view.findViewById(R.id.radio_button);
