@@ -48,6 +48,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowInsetsController;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethod;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -566,6 +567,14 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
     public boolean onShowInputRequested(final int flags, final boolean configChange) {
         if (isImeSuppressedByHardwareKeyboard()) {
             return true;
+        }
+        if (onEvaluateInputViewShown()) {
+            // TV remotes are often reported as a hardware keyboard. The framework then refuses
+            // implicit show requests (a focused text field after pressing OK) unless the system
+            // setting show_ime_with_hard_keyboard is on, so no keyboard would appear at all.
+            // The user asked for the on-screen keyboard, so show it like an explicit request.
+            return (flags & InputMethod.SHOW_EXPLICIT) != 0 || configChange
+                    || !onEvaluateFullscreenMode();
         }
         return super.onShowInputRequested(flags, configChange);
     }
