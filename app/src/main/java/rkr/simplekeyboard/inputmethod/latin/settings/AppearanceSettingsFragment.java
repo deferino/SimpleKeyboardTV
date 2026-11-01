@@ -18,15 +18,13 @@
 
 package rkr.simplekeyboard.inputmethod.latin.settings;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.SwitchPreference;
-import android.widget.Toast;
+import java.util.Map;
 
 import rkr.simplekeyboard.inputmethod.R;
 import rkr.simplekeyboard.inputmethod.keyboard.KeyboardTheme;
@@ -51,6 +49,7 @@ public final class AppearanceSettingsFragment extends SubScreenFragment {
     public void onResume() {
         super.onResume();
 
+        updateGboardTvSwitch();
         ThemeSettingsFragment.updateKeyboardThemeSummary(findPreference(Settings.SCREEN_THEME));
 
         final Preference colorPreference = findPreference(Settings.PREF_KEYBOARD_COLOR);
@@ -63,6 +62,9 @@ public final class AppearanceSettingsFragment extends SubScreenFragment {
 
     @Override
     public void onSharedPreferenceChanged(final SharedPreferences prefs, final String key) {
+        if (!mApplyingGboardTvStyle && isGboardTvKey(key)) {
+            updateGboardTvSwitch();
+        }
         if (KeyboardTheme.KEYBOARD_THEME_KEY.equals(key)) {
             ThemeSettingsFragment.updateKeyboardThemeSummary(findPreference(Settings.SCREEN_THEME));
 
@@ -71,57 +73,169 @@ public final class AppearanceSettingsFragment extends SubScreenFragment {
         }
     }
 
+    // The settings that make up the "Gboard TV style".
+    private static final String[] GBOARD_TV_KEYS = {
+        Settings.PREF_CENTERED_KEYBOARD,
+        Settings.PREF_CENTERED_FLOATING,
+        Settings.PREF_KEYBOARD_WIDTH,
+        Settings.PREF_KEYBOARD_HEIGHT,
+        Settings.PREF_BOTTOM_OFFSET_PORTRAIT,
+        Settings.PREF_SHOW_NUMBER_ROW,
+        Settings.PREF_SHOW_SPECIAL_CHARS,
+    };
+    // Where the settings from before the style was switched on are kept, so that switching it
+    // off brings them back.
+    private static final String PREF_GBOARD_TV_BACKUP = "pref_gboard_tv_backup";
+
+    private boolean mApplyingGboardTvStyle;
+
     /**
-     * One-press "Gboard TV style": centered compact keyboard, 80% wide, 70% high, number row on,
-     * special characters off. The chosen theme and custom colour are left alone.
+     * "Gboard TV style" switch: centered compact keyboard, 80% wide, 70% high, number row on,
+     * special characters off. The chosen theme and custom colour are left alone. The switch
+     * always reflects the real settings: it turns itself off when one of them is changed by hand.
+     * Switching it off restores the settings from before, or the standard full-width keyboard
+     * when there are none saved.
      */
     private void setupGboardTvPreset() {
-        final Preference pref = findPreference(Settings.PREF_GBOARD_TV_PRESET);
+        final SwitchPreference pref = (SwitchPreference)findPreference(
+                Settings.PREF_GBOARD_TV_PRESET);
         if (pref == null) {
             return;
         }
-        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        pref.setChecked(isGboardTvStyleActive());
+        pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
-            public boolean onPreferenceClick(final Preference preference) {
-                new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.gboard_tv_style)
-                        .setMessage(R.string.gboard_tv_style_confirm)
-                        .setPositiveButton(android.R.string.ok,
-                                new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(final DialogInterface dialog, final int which) {
-                                applyGboardTvPreset();
-                            }
-                        })
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .show();
+            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+                mApplyingGboardTvStyle = true;
+                try {
+                    if ((Boolean)newValue) {
+                        applyGboardTvStyle();
+                    } else {
+                        leaveGboardTvStyle();
+                    }
+                } finally {
+                    mApplyingGboardTvStyle = false;
+                }
+                refreshAfterGboardTvStyleChange();
                 return true;
             }
         });
     }
 
-    private void applyGboardTvPreset() {
-        // Width, height and bottom offset are reset to their defaults (80%, 70%, 0 dp).
-        getSharedPreferences().edit()
-                .remove(Settings.PREF_KEYBOARD_WIDTH)
+    private static boolean isGboardTvKey(final String key) {
+        for (final String gboardKey : GBOARD_TV_KEYS) {
+            if (gboardKey.equals(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isGboardTvStyleActive() {
+        final SharedPreferences prefs = getSharedPreferences();
+        return Settings.readCenteredKeyboardEnabled(prefs)
+                && !Settings.readCenteredFloatingEnabled(prefs)
+                && isSameScale(Settings.readKeyboardWidth(prefs, SettingsValues.DEFAULT_WIDTH_SCALE),
+                        SettingsValues.DEFAULT_WIDTH_SCALE)
+                && isSameScale(Settings.readKeyboardHeight(prefs, SettingsValues.DEFAULT_HEIGHT_SCALE),
+                        SettingsValues.DEFAULT_HEIGHT_SCALE)
+                && Settings.readBottomOffsetPortrait(prefs) == Settings.DEFAULT_BOTTOM_OFFSET
+                && Settings.readShowNumberRow(prefs)
+                && !Settings.readShowSpecialChars(prefs);
+    }
+
+    private static boolean isSameScale(final float a, final float b) {
+        return Math.abs(a - b) < 0.001f;
+    }
+
+    private void applyGboardTvStyle() {
+        final SharedPreferences prefs = getSharedPreferences();
+        final SharedPreferences.Editor editor = prefs.edit();
+        if (!isGboardTvStyleActive()) {
+            // Remember what the person had, so that switching the style off can bring it back.
+            final Map<String, ?> all = prefs.getAll();
+            final StringBuilder backup = new StringBuilder();
+            for (final String key : GBOARD_TV_KEYS) {
+                final Object value = all.get(key);
+                if (value != null) {
+                    backup.append(key).append('=').append(value).append(';');
+                }
+            }
+            editor.putString(PREF_GBOARD_TV_BACKUP, backup.toString());
+        }
+        // Width, height and bottom offset go back to their defaults (80%, 70%, 0 dp).
+        editor.remove(Settings.PREF_KEYBOARD_WIDTH)
                 .remove(Settings.PREF_KEYBOARD_HEIGHT)
                 .remove(Settings.PREF_BOTTOM_OFFSET_PORTRAIT)
+                .putBoolean(Settings.PREF_CENTERED_KEYBOARD, true)
+                .putBoolean(Settings.PREF_CENTERED_FLOATING, false)
                 .putBoolean(Settings.PREF_SHOW_NUMBER_ROW, true)
                 .putBoolean(Settings.PREF_SHOW_SPECIAL_CHARS, false)
                 .apply();
-        final Preference centered = findPreference(Settings.PREF_CENTERED_KEYBOARD);
-        if (centered instanceof SwitchPreference) {
-            ((SwitchPreference)centered).setChecked(true);
+    }
+
+    private void leaveGboardTvStyle() {
+        final SharedPreferences prefs = getSharedPreferences();
+        final String backup = prefs.getString(PREF_GBOARD_TV_BACKUP, null);
+        final SharedPreferences.Editor editor = prefs.edit();
+        for (final String key : GBOARD_TV_KEYS) {
+            editor.remove(key);
         }
+        if (backup != null) {
+            for (final String entry : backup.split(";")) {
+                final int separator = entry.indexOf('=');
+                if (separator <= 0) {
+                    continue;
+                }
+                final String key = entry.substring(0, separator);
+                final String value = entry.substring(separator + 1);
+                try {
+                    if (Settings.PREF_KEYBOARD_WIDTH.equals(key)
+                            || Settings.PREF_KEYBOARD_HEIGHT.equals(key)) {
+                        editor.putFloat(key, Float.parseFloat(value));
+                    } else if (Settings.PREF_BOTTOM_OFFSET_PORTRAIT.equals(key)) {
+                        editor.putInt(key, Integer.parseInt(value));
+                    } else {
+                        editor.putBoolean(key, Boolean.parseBoolean(value));
+                    }
+                } catch (final NumberFormatException ignored) {
+                    // Skip a damaged entry; the setting falls back to its default.
+                }
+            }
+            editor.remove(PREF_GBOARD_TV_BACKUP);
+        } else {
+            // Nothing saved: the standard Simple Keyboard look (full width and height).
+            editor.putBoolean(Settings.PREF_CENTERED_KEYBOARD, false)
+                    .putFloat(Settings.PREF_KEYBOARD_WIDTH, 1.0f)
+                    .putFloat(Settings.PREF_KEYBOARD_HEIGHT, 1.0f)
+                    .putBoolean(Settings.PREF_SHOW_NUMBER_ROW, false)
+                    .putBoolean(Settings.PREF_SHOW_SPECIAL_CHARS, true);
+        }
+        editor.apply();
+    }
+
+    /** Updates the other preferences on this screen after the style was switched. */
+    private void refreshAfterGboardTvStyleChange() {
+        final Preference centered = findPreference(Settings.PREF_CENTERED_KEYBOARD);
         final Preference floating = findPreference(Settings.PREF_CENTERED_FLOATING);
+        final SharedPreferences prefs = getSharedPreferences();
+        if (centered instanceof SwitchPreference) {
+            ((SwitchPreference)centered).setChecked(Settings.readCenteredKeyboardEnabled(prefs));
+        }
         if (floating instanceof SwitchPreference) {
-            ((SwitchPreference)floating).setChecked(false);
+            ((SwitchPreference)floating).setChecked(Settings.readCenteredFloatingEnabled(prefs));
         }
         // Refresh the summaries of the seek bar preferences.
         setupKeyboardWidthSettings();
         setupKeyboardHeightSettings();
         setupBottomOffsetPortraitSettings();
-        Toast.makeText(getActivity(), R.string.gboard_tv_style_applied, Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateGboardTvSwitch() {
+        final Preference pref = findPreference(Settings.PREF_GBOARD_TV_PRESET);
+        if (pref instanceof SwitchPreference) {
+            ((SwitchPreference)pref).setChecked(isGboardTvStyleActive());
+        }
     }
 
     private void setupKeyboardWidthSettings() {
