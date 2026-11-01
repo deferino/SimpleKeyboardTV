@@ -66,4 +66,8 @@
     <string name="centered_floating">Yüzen klavye görünümü (alttan boşluklu)</string>
     <string name="centered_floating_summary">Ortalanmış klavyeyi ekranın altına bitişik yerine alttan boşluklu yüzen kart olarak göster</string>
     <string name="prefs_keyboard_width_settings">Klavye genişliği</string>
+    <string name="gboard_tv_style">Gboard TV stilini uygula</string>
+    <string name="gboard_tv_style_summary">Ortalanmış kompakt klavye, sayı satırı açık. Seçili temaya ve renge dokunmaz</string>
+    <string name="gboard_tv_style_confirm">Genişlik, yükseklik, konum, sayı satırı ve özel karakterler Gboard TV görünümüne ayarlansın mı? Tema ve renk ayarınız korunur.</string>
+    <string name="gboard_tv_style_applied">Gboard TV stili uygulandı</string>
 </resources>

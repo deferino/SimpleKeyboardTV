@@ -18,11 +18,15 @@
 
 package rkr.simplekeyboard.inputmethod.latin.settings;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.SwitchPreference;
+import android.widget.Toast;
 
 import rkr.simplekeyboard.inputmethod.R;
 import rkr.simplekeyboard.inputmethod.keyboard.KeyboardTheme;
@@ -36,6 +40,7 @@ public final class AppearanceSettingsFragment extends SubScreenFragment {
         super.onCreate(icicle);
         addPreferencesFromResource(R.xml.prefs_screen_appearance);
 
+        setupGboardTvPreset();
         setupKeyboardWidthSettings();
         setupKeyboardHeightSettings();
         setupBottomOffsetPortraitSettings();
@@ -64,6 +69,59 @@ public final class AppearanceSettingsFragment extends SubScreenFragment {
             final KeyboardTheme theme = KeyboardTheme.getKeyboardTheme(prefs);
             setPreferenceEnabled(Settings.PREF_KEYBOARD_COLOR, theme.mCustomColorSupport);
         }
+    }
+
+    /**
+     * One-press "Gboard TV style": centered compact keyboard, 80% wide, 70% high, number row on,
+     * special characters off. The chosen theme and custom colour are left alone.
+     */
+    private void setupGboardTvPreset() {
+        final Preference pref = findPreference(Settings.PREF_GBOARD_TV_PRESET);
+        if (pref == null) {
+            return;
+        }
+        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(final Preference preference) {
+                new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.gboard_tv_style)
+                        .setMessage(R.string.gboard_tv_style_confirm)
+                        .setPositiveButton(android.R.string.ok,
+                                new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(final DialogInterface dialog, final int which) {
+                                applyGboardTvPreset();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show();
+                return true;
+            }
+        });
+    }
+
+    private void applyGboardTvPreset() {
+        // Width, height and bottom offset are reset to their defaults (80%, 70%, 0 dp).
+        getSharedPreferences().edit()
+                .remove(Settings.PREF_KEYBOARD_WIDTH)
+                .remove(Settings.PREF_KEYBOARD_HEIGHT)
+                .remove(Settings.PREF_BOTTOM_OFFSET_PORTRAIT)
+                .putBoolean(Settings.PREF_SHOW_NUMBER_ROW, true)
+                .putBoolean(Settings.PREF_SHOW_SPECIAL_CHARS, false)
+                .apply();
+        final Preference centered = findPreference(Settings.PREF_CENTERED_KEYBOARD);
+        if (centered instanceof SwitchPreference) {
+            ((SwitchPreference)centered).setChecked(true);
+        }
+        final Preference floating = findPreference(Settings.PREF_CENTERED_FLOATING);
+        if (floating instanceof SwitchPreference) {
+            ((SwitchPreference)floating).setChecked(false);
+        }
+        // Refresh the summaries of the seek bar preferences.
+        setupKeyboardWidthSettings();
+        setupKeyboardHeightSettings();
+        setupBottomOffsetPortraitSettings();
+        Toast.makeText(getActivity(), R.string.gboard_tv_style_applied, Toast.LENGTH_SHORT).show();
     }
 
     private void setupKeyboardWidthSettings() {

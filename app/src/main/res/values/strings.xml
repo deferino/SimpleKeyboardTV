@@ -129,4 +129,8 @@
     <string name="centered_floating">Floating keyboard style (bottom gap)</string>
     <string name="centered_floating_summary">Float the centered keyboard above the bottom edge instead of attaching flush to the bottom</string>
     <string name="prefs_keyboard_width_settings">Keyboard width</string>
+    <string name="gboard_tv_style">Apply Gboard TV style</string>
+    <string name="gboard_tv_style_summary">Centered compact keyboard with the number row on. Your theme and colour stay as they are</string>
+    <string name="gboard_tv_style_confirm">Set the width, height, position, number row and special characters to the Gboard TV look? Your theme and colour are kept.</string>
+    <string name="gboard_tv_style_applied">Gboard TV style applied</string>
 </resources>

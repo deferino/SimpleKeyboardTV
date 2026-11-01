@@ -19,6 +19,11 @@
     xmlns:latin="http://schemas.android.com/apk/res-auto"
     android:key="screen_appearance"
     android:title="@string/settings_screen_appearance">
+    <Preference
+        android:key="pref_gboard_tv_preset"
+        android:title="@string/gboard_tv_style"
+        android:summary="@string/gboard_tv_style_summary"
+        android:persistent="false" />
     <PreferenceScreen
         android:fragment="rkr.simplekeyboard.inputmethod.latin.settings.ThemeSettingsFragment"
         android:key="screen_theme"
