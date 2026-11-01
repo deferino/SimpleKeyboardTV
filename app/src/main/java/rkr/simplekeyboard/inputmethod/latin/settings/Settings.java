@@ -224,7 +224,10 @@ public final class Settings extends BroadcastReceiver implements SharedPreferenc
     }
 
     public static boolean readUseOnScreenKeyboard(final SharedPreferences prefs) {
-        return prefs.getBoolean(PREF_USE_ON_SCREEN, true);
+        // Always on: a TV has no touch keyboard, and many TV remotes are reported as a hardware
+        // keyboard, which would hide the keyboard completely. A stored value is ignored on purpose,
+        // earlier versions could save "false" here just by opening the Preferences screen.
+        return true;
     }
 
     public static boolean readEnableImeSwitch(final SharedPreferences prefs) {

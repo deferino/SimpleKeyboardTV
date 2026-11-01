@@ -19,7 +19,6 @@
 package rkr.simplekeyboard.inputmethod.latin.settings;
 
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 
 import rkr.simplekeyboard.inputmethod.R;
@@ -44,9 +43,8 @@ public final class PreferencesSettingsFragment extends SubScreenFragment {
         super.onCreate(icicle);
         addPreferencesFromResource(R.xml.prefs_screen_preferences);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) {
-            removePreference(Settings.PREF_USE_ON_SCREEN);
-        }
+        // The on-screen keyboard is always shown on TV, so this option is never offered.
+        removePreference(Settings.PREF_USE_ON_SCREEN);
     }
 
     @Override

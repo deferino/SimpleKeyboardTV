@@ -38,7 +38,7 @@
         android:key="pref_use_on_screen"
         android:title="@string/pref_use_on_screen"
         android:summary="@string/pref_use_on_screen_summary"
-        android:defaultValue="false" />
+        android:defaultValue="true" />
     <SwitchPreference
         android:key="pref_enable_ime_switch"
         android:title="@string/pref_enable_ime_switch"
