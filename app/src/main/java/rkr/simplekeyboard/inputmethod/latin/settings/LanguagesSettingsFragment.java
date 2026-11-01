@@ -26,13 +26,21 @@ import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import java.util.Comparator;
 import java.util.Locale;
@@ -140,6 +148,41 @@ public final class LanguagesSettingsFragment extends PreferenceFragment {
 
         buildLanguagePreferences(usedLocales, group, context);
         setLocaleEntries(usedLocales, unusedLocales);
+        buildActionPreferences(group, context, !unusedLocales.isEmpty(), usedLocales.size() > 1);
+    }
+
+    /**
+     * Add "Add language" / "Remove language" as regular list items. The action bar buttons are
+     * not shown on many TVs and cannot be reached with a remote, so these work with the D-pad.
+     */
+    private void buildActionPreferences(final PreferenceGroup group, final Context context,
+                                        final boolean canAdd, final boolean canRemove) {
+        if (canAdd) {
+            final Preference addPreference = new Preference(context);
+            addPreference.setTitle(R.string.add_language);
+            addPreference.setOnPreferenceClickListener(
+                    new Preference.OnPreferenceClickListener() {
+                        @Override
+                        public boolean onPreferenceClick(final Preference preference) {
+                            showAddLanguagePopup();
+                            return true;
+                        }
+                    });
+            group.addPreference(addPreference);
+        }
+        if (canRemove) {
+            final Preference removePreference = new Preference(context);
+            removePreference.setTitle(R.string.remove_language);
+            removePreference.setOnPreferenceClickListener(
+                    new Preference.OnPreferenceClickListener() {
+                        @Override
+                        public boolean onPreferenceClick(final Preference preference) {
+                            showRemoveLanguagePopup();
+                            return true;
+                        }
+                    });
+            group.addPreference(removePreference);
+        }
     }
 
     /**
@@ -285,7 +328,10 @@ public final class LanguagesSettingsFragment extends PreferenceFragment {
     }
 
     /**
-     * Show a multi-select popup.
+     * Show a multi-select popup. The buttons sit in a column beside the list instead of below it:
+     * the list can have about a hundred entries and on a TV remote the buttons below it could only
+     * be reached after scrolling to the very end. Pressing right in the list moves to the positive
+     * button.
      * @param names the list of the choice display names.
      * @param titleRes the title of the dialog.
      * @param positiveButtonRes the text for the positive button.
@@ -296,51 +342,94 @@ public final class LanguagesSettingsFragment extends PreferenceFragment {
     private void showMultiChoiceDialog(final CharSequence[] names, final int titleRes,
                                        final int positiveButtonRes, final boolean allowAllChecked,
                                        final OnMultiChoiceDialogAcceptListener listener) {
-        final boolean[] checkedItems = new boolean[names.length];
-        mAlertDialog = new AlertDialog.Builder(getActivity())
-                .setTitle(titleRes)
-                .setMultiChoiceItems(names, checkedItems,
-                        new DialogInterface.OnMultiChoiceClickListener() {
-                            @Override
-                            public void onClick(final DialogInterface dialogInterface,
-                                                final int which, final boolean isChecked) {
-                                // make sure the positive button is only enabled when at least one
-                                // item is checked and when not all of the items are checked (unless
-                                // allowAllChecked is true)
-                                boolean hasCheckedItem = false;
-                                boolean hasUncheckedItem = false;
-                                for (final boolean itemChecked : checkedItems) {
-                                    if (itemChecked) {
-                                        hasCheckedItem = true;
-                                        if (allowAllChecked) {
-                                            break;
-                                        }
-                                    } else {
-                                        hasUncheckedItem = true;
-                                    }
-                                    if (hasCheckedItem && hasUncheckedItem) {
-                                        break;
-                                    }
-                                }
-                                mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(
-                                        hasCheckedItem && (hasUncheckedItem || allowAllChecked));
-                            }
-                        })
-                .setPositiveButton(positiveButtonRes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        listener.onClick(checkedItems);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        // the builder's context carries the dialog theme, so the buttons look like dialog buttons
+        final Context context = builder.getContext();
+        final DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        final int gap = (int) (8 * metrics.density);
+
+        final ListView listView = new ListView(context);
+        listView.setId(View.generateViewId());
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        listView.setAdapter(new ArrayAdapter<CharSequence>(context,
+                android.R.layout.simple_list_item_multiple_choice, names));
+
+        final Button positiveButton = createDialogButton(context, positiveButtonRes);
+        positiveButton.setId(View.generateViewId());
+        // disabled since nothing is checked by default
+        positiveButton.setEnabled(false);
+        final Button negativeButton = createDialogButton(context, android.R.string.cancel);
+
+        listView.setNextFocusRightId(positiveButton.getId());
+        positiveButton.setNextFocusLeftId(listView.getId());
+        negativeButton.setNextFocusLeftId(listView.getId());
+
+        final LinearLayout buttons = new LinearLayout(context);
+        buttons.setOrientation(LinearLayout.VERTICAL);
+        buttons.setGravity(Gravity.CENTER_VERTICAL);
+        buttons.addView(positiveButton, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        buttons.addView(negativeButton, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        final LinearLayout content = new LinearLayout(context);
+        content.setOrientation(LinearLayout.HORIZONTAL);
+        content.setPadding(gap, 0, gap, gap);
+        final int listHeight = (int) (metrics.heightPixels * 0.6f);
+        content.addView(listView, new LinearLayout.LayoutParams(
+                (int) (metrics.widthPixels * 0.4f), listHeight));
+        content.addView(buttons, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, listHeight));
+
+        final AlertDialog dialog = builder.setTitle(titleRes).setView(content).create();
+        mAlertDialog = dialog;
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(final AdapterView<?> parent, final View view,
+                                    final int position, final long id) {
+                // make sure the positive button is only enabled when at least one item is checked
+                // and when not all of the items are checked (unless allowAllChecked is true)
+                final SparseBooleanArray checked = listView.getCheckedItemPositions();
+                boolean hasCheckedItem = false;
+                boolean hasUncheckedItem = false;
+                for (int i = 0; i < names.length; i++) {
+                    if (checked.get(i)) {
+                        hasCheckedItem = true;
+                    } else {
+                        hasUncheckedItem = true;
                     }
-                })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
-                    }
-                })
-                .create();
-        mAlertDialog.show();
-        // disable the positive button since nothing is checked by default
-        mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                }
+                positiveButton.setEnabled(
+                        hasCheckedItem && (hasUncheckedItem || allowAllChecked));
+            }
+        });
+        positiveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                final SparseBooleanArray checked = listView.getCheckedItemPositions();
+                final boolean[] checkedItems = new boolean[names.length];
+                for (int i = 0; i < checkedItems.length; i++) {
+                    checkedItems[i] = checked.get(i);
+                }
+                dialog.dismiss();
+                listener.onClick(checkedItems);
+            }
+        });
+        negativeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
+    private static Button createDialogButton(final Context context, final int textRes) {
+        final Button button = new Button(context, null, android.R.attr.buttonBarButtonStyle);
+        button.setText(textRes);
+        button.setMinWidth((int) (112 * context.getResources().getDisplayMetrics().density));
+        return button;
     }
 
     /**

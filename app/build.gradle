@@ -1,17 +1,38 @@
 apply plugin: 'com.android.application'
 
+// Optional release signing: put keystore.properties (storeFile, storePassword, keyAlias, keyPassword)
+// in the project root. It is git-ignored. Without it the release build is signed with the debug key,
+// which is fine for sideloading on your own TV.
+def keystorePropsFile = rootProject.file('keystore.properties')
+def keystoreProps = new Properties()
+if (keystorePropsFile.exists()) {
+    keystorePropsFile.withInputStream { keystoreProps.load(it) }
+}
+
 android {
     defaultConfig {
-        applicationId "rkr.simplekeyboard.inputmethod.tv"
+        applicationId "com.simplekeyboardtv.ime"
         compileSdk 37
         minSdkVersion 24
         targetSdkVersion 37
-        versionCode 148
-        versionName "6.7-tv"
+        versionCode 1
+        versionName "1.0.0"
+    }
+    signingConfigs {
+        if (keystorePropsFile.exists()) {
+            release {
+                storeFile rootProject.file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
+        }
     }
     buildTypes {
         release {
             minifyEnabled true
+            shrinkResources true
+            signingConfig keystorePropsFile.exists() ? signingConfigs.release : signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

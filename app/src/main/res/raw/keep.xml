@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Resources looked up by NAME at runtime (Resources.getIdentifier) cannot be
+  seen by the resource shrinker, so release builds would strip them:
+    - string/locale_name_*, string/... (LocaleResourceUtils, KeyboardTextsSet)
+    - xml/keyboard_layout_set_* (KeyboardLayoutSet)
+  Without this, Settings > Languages crashes with "String resource ID #0x0".
+-->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@string/*,@xml/*" />

@@ -20,3 +20,5 @@
 -keep class rkr.simplekeyboard.inputmethod.latin.settings.SettingsFragment
 -keep class rkr.simplekeyboard.inputmethod.latin.settings.LanguagesSettingsFragment
 -keep class rkr.simplekeyboard.inputmethod.latin.settings.SingleLanguageSettingsFragment
+# Instantiated by name from res/xml/prefs*.xml (android:fragment)
+-keep class rkr.simplekeyboard.inputmethod.latin.settings.*Fragment { <init>(); }
