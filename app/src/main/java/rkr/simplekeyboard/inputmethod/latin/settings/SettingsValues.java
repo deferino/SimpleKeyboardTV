@@ -29,7 +29,10 @@ import rkr.simplekeyboard.inputmethod.latin.InputAttributes;
 
 // Non-final for testing via mock library.
 public class SettingsValues {
-    public static final float DEFAULT_SIZE_SCALE = 1.0f; // 100%
+    // Default look: a compact keyboard centered on the screen (80% wide, 70% high), the same
+    // on every TV because the size is relative to the screen. Both can be changed in Appearance.
+    public static final float DEFAULT_WIDTH_SCALE = 0.8f; // 80%
+    public static final float DEFAULT_HEIGHT_SCALE = 0.7f; // 70%
 
     // From resources:
     public final SpacingAndPunctuations mSpacingAndPunctuations;
@@ -85,8 +88,8 @@ public class SettingsValues {
         mKeyLongpressTimeout = Settings.readKeyLongpressTimeout(prefs, res);
         mKeypressSoundVolume = Settings.readKeypressSoundVolume(prefs);
         mKeyPreviewPopupDismissDelay = res.getInteger(R.integer.config_key_preview_linger_timeout);
-        mKeyboardHeightScale = Settings.readKeyboardHeight(prefs, DEFAULT_SIZE_SCALE);
-        mKeyboardWidthScale = Settings.readKeyboardWidth(prefs, DEFAULT_SIZE_SCALE);
+        mKeyboardHeightScale = Settings.readKeyboardHeight(prefs, DEFAULT_HEIGHT_SCALE);
+        mKeyboardWidthScale = Settings.readKeyboardWidth(prefs, DEFAULT_WIDTH_SCALE);
         mBottomOffsetPortrait = Settings.readBottomOffsetPortrait(prefs);
         mDisplayOrientation = res.getConfiguration().orientation;
         mShowSpecialChars = Settings.readShowSpecialChars(prefs);

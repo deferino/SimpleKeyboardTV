@@ -97,12 +97,13 @@ public final class AppearanceSettingsFragment extends SubScreenFragment {
 
             @Override
             public int readValue(final String key) {
-                return getPercentageFromValue(Settings.readKeyboardWidth(prefs, 1));
+                return getPercentageFromValue(Settings.readKeyboardWidth(
+                        prefs, SettingsValues.DEFAULT_WIDTH_SCALE));
             }
 
             @Override
             public int readDefaultValue(final String key) {
-                return getPercentageFromValue(1);
+                return getPercentageFromValue(SettingsValues.DEFAULT_WIDTH_SCALE);
             }
 
             @Override
@@ -149,12 +150,13 @@ public final class AppearanceSettingsFragment extends SubScreenFragment {
 
             @Override
             public int readValue(final String key) {
-                return getPercentageFromValue(Settings.readKeyboardHeight(prefs, 1));
+                return getPercentageFromValue(Settings.readKeyboardHeight(
+                        prefs, SettingsValues.DEFAULT_HEIGHT_SCALE));
             }
 
             @Override
             public int readDefaultValue(final String key) {
-                return getPercentageFromValue(1);
+                return getPercentageFromValue(SettingsValues.DEFAULT_HEIGHT_SCALE);
             }
 
             @Override

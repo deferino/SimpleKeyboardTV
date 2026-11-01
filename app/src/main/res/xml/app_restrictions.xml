@@ -18,12 +18,12 @@
         android:key="pref_show_number_row"
         android:title="@string/show_number_row"
         android:restrictionType="bool"
-        android:defaultValue="false" />
+        android:defaultValue="true" />
     <restriction
         android:key="pref_show_special_chars"
         android:title="@string/show_special_chars"
         android:restrictionType="bool"
-        android:defaultValue="true" />
+        android:defaultValue="false" />
     <restriction
         android:key="pref_show_language_switch_key"
         android:title="@string/show_language_switch_key"
@@ -89,7 +89,7 @@
         android:key="pref_keyboard_height"
         android:title="@string/prefs_keyboard_height_settings"
         android:restrictionType="integer"
-        android:defaultValue="100" />
+        android:defaultValue="70" />
     <restriction
         android:key="pref_bottom_offset_portrait"
         android:title="@string/prefs_bottom_offset_portrait_settings"

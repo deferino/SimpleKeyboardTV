@@ -21,7 +21,7 @@ Added for TV:
 - Left/right cursor keys in the bottom row
 - Copy and Paste keys in place of the comma and period keys, with long-press Copy for the whole text ([details](#copy-and-paste-keys))
 - Centered compact keyboard in the style of Gboard on TV, or a floating card with a gap from the bottom edge
-- Adjustable keyboard width, height and distance from the bottom edge
+- Adjustable keyboard width, height and distance from the bottom edge. The defaults give a Gboard-on-TV look out of the box: centered, 80% wide, 70% high, with the number row on. Sizes are relative to the screen, so it looks the same on every TV
 - Shows up in the TV launcher (Leanback) with its own icon and banner
 
 Kept from Simple Keyboard:
