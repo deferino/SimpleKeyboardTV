@@ -19,7 +19,7 @@ Added for TV:
 - Navigate the keys with the D-pad and press OK to type, with a clear focus highlight on the active key
 - The long-press alternatives popup (accents, symbols) also works with the D-pad
 - Left/right cursor keys in the bottom row
-- Copy and Paste keys in place of the comma and period keys (long-press Copy to copy all text)
+- Copy and Paste keys in place of the comma and period keys, with long-press Copy for the whole text ([details](#copy-and-paste-keys))
 - Centered compact keyboard in the style of Gboard on TV, or a floating card with a gap from the bottom edge
 - Adjustable keyboard width, height and distance from the bottom edge
 - Shows up in the TV launcher (Leanback) with its own icon and banner
@@ -35,6 +35,24 @@ Not included, and not planned: emoji, GIFs, spell checking, swipe typing, voice 
 <p align="center">
   <img src="images/settings.png" alt="Settings screen" width="480">
 </p>
+
+## Copy and Paste keys
+
+Selecting and copying text with a D-pad remote is normally slow and cumbersome. The bottom row has dedicated
+Copy (left of the spacebar) and Paste (right of the cursor arrow keys) keys:
+
+- **Copy, single press:** selects (highlights) and copies the first word in the text field.
+- **Copy, long press:** selects (highlights) and copies the entire text in the text field.
+- **Paste:** inserts the text from the clipboard into the active text field.
+
+Smart selection handling, while text is highlighted by the Copy key:
+
+- Typing a character, pressing Space or pressing Paste moves the cursor to the end of the text instead of
+  overwriting the highlighted text.
+- Backspace deletes the highlighted text.
+- The left and right arrow keys collapse the highlight to its start or end, so you can move the cursor freely.
+
+The comma and period keys are still available on the ?123 symbols layout.
 
 ## Compared with Gboard on TV
 
