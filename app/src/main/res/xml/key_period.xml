@@ -31,8 +31,12 @@
                 latin:moreKeys="!text/morekeys_punctuation,!text/morekeys_z" />
         </case>
         <default>
+            <!-- Long press: popup with the characters needed for typing URLs (and the period and
+                 comma, which are only on the ?123 page otherwise). -->
             <Key
-                latin:keyStyle="pasteKeyStyle" />
+                latin:keyStyle="pasteKeyStyle"
+                latin:keyActionFlags="noKeyPreview|enableLongPress"
+                latin:moreKeys="/,.,\\,,-,_,:" />
         </default>
     </switch>
 </merge>

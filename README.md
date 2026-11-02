@@ -43,7 +43,8 @@ Copy (left of the spacebar) and Paste (right of the cursor arrow keys) keys:
 
 - **Copy, single press:** selects (highlights) and copies the first word in the text field.
 - **Copy, long press:** selects (highlights) and copies the entire text in the text field.
-- **Paste:** inserts the text from the clipboard into the active text field.
+- **Paste, single press:** inserts the text from the clipboard into the active text field.
+- **Paste, long press:** opens a small popup with `/ . , - _ :`, so you can type URLs without leaving the main layout.
 
 Smart selection handling, while text is highlighted by the Copy key:
 
@@ -52,7 +53,7 @@ Smart selection handling, while text is highlighted by the Copy key:
 - Backspace deletes the highlighted text.
 - The left and right arrow keys collapse the highlight to its start or end, so you can move the cursor freely.
 
-The comma and period keys are still available on the ?123 symbols layout.
+The comma and period keys are still available on the ?123 symbols layout, and in the Paste long-press popup.
 
 ## Compared with Gboard on TV
 
