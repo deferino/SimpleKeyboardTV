@@ -23,6 +23,7 @@ Added for TV:
 - Centered compact keyboard in the style of Gboard on TV, or a floating card with a gap from the bottom edge
 - Adjustable keyboard width, height and distance from the bottom edge. The defaults give a Gboard-on-TV look out of the box: centered, 80% wide, 70% high, with the number row on. Sizes are relative to the screen, so it looks about the same on every TV. The "Gboard TV style" switch in Appearance turns this look on or off in one press, whatever theme you use. Switching it off brings back your previous settings
 - Shows up in the TV launcher (Leanback) with its own icon and banner
+- Settings screen designed for TV: dark two-pane layout, large text, clear D-pad focus, safe-area margins
 
 Kept from Simple Keyboard:
 

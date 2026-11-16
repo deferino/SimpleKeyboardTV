@@ -27,6 +27,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
 import android.preference.PreferenceScreen;
 import android.util.Log;
+import android.view.View;
 
 import java.util.Set;
 
@@ -107,6 +108,19 @@ public abstract class SubScreenFragment extends PreferenceFragment
         };
         getSharedPreferences().registerOnSharedPreferenceChangeListener(
                 mSharedPreferenceChangeListener);
+    }
+
+    /** The text shown under the screen title in the header panel, or 0 for none. */
+    int getDescriptionResId() {
+        return 0;
+    }
+
+    @Override
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        final PreferenceScreen screen = getPreferenceScreen();
+        SettingsActivity.setupScreen(this, view, screen != null ? screen.getTitle() : null,
+                getDescriptionResId());
     }
 
     @Override

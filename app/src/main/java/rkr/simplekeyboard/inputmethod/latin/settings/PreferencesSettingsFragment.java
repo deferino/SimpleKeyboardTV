@@ -39,6 +39,11 @@ import rkr.simplekeyboard.inputmethod.keyboard.KeyboardLayoutSet;
  */
 public final class PreferencesSettingsFragment extends SubScreenFragment {
     @Override
+    int getDescriptionResId() {
+        return R.string.tv_desc_preferences;
+    }
+
+    @Override
     public void onCreate(final Bundle icicle) {
         super.onCreate(icicle);
         addPreferencesFromResource(R.xml.prefs_screen_preferences);

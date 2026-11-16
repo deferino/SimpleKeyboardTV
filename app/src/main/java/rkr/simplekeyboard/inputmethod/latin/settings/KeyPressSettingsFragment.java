@@ -38,6 +38,11 @@ import rkr.simplekeyboard.inputmethod.latin.AudioAndHapticFeedbackManager;
  */
 public final class KeyPressSettingsFragment extends SubScreenFragment {
     @Override
+    int getDescriptionResId() {
+        return R.string.tv_desc_key_press;
+    }
+
+    @Override
     public void onCreate(final Bundle icicle) {
         super.onCreate(icicle);
         addPreferencesFromResource(R.xml.prefs_screen_key_press);

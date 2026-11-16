@@ -131,4 +131,13 @@
     <string name="prefs_keyboard_width_settings">Keyboard width</string>
     <string name="gboard_tv_style">Gboard TV style</string>
     <string name="gboard_tv_style_summary">Compact centered keyboard with a number row. Turning it off brings back your previous settings</string>
+    <string name="tv_desc_main">A lightweight keyboard made for the TV remote. No ads, no tracking, no permissions.</string>
+    <string name="tv_desc_languages">Choose the languages and layouts you type with.</string>
+    <string name="tv_desc_language_layouts">Turn on the layouts you want to use for this language.</string>
+    <string name="tv_desc_preferences">Typing behaviour and which keys are shown</string>
+    <string name="tv_desc_key_press">Sound, popup and long-press timing</string>
+    <string name="tv_desc_appearance">Theme, size and position of the keyboard</string>
+    <string name="tv_desc_theme">Pick a colour theme for the keyboard.</string>
+    <string name="tv_desc_test_keyboard">Open a text field and try the keyboard</string>
+    <string name="tv_version">Version %1$s</string>
 </resources>

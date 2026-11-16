@@ -52,6 +52,7 @@ import rkr.simplekeyboard.inputmethod.latin.RichInputMethodManager;
 
         mSubtypeEnablerPreference = new Preference(context);
         mSubtypeEnablerPreference.setTitle(R.string.select_language);
+        mSubtypeEnablerPreference.setIcon(R.drawable.ic_tv_language);
         mSubtypeEnablerPreference.setFragment(LanguagesSettingsFragment.class.getName());
         mSubtypeEnablerPreference.setEnabled(!restrictionKeys.contains(Settings.PREF_ENABLED_SUBTYPES));
         prefScreen.addPreference(mSubtypeEnablerPreference);

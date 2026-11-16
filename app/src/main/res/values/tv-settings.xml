@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings UI for TV: dark, two-pane, D-pad focus. Resources only, no extra libraries. -->
+<resources>
+    <color name="tv_bg">#0E1419</color>
+    <color name="tv_surface">#1A242C</color>
+    <color name="tv_accent">#4FC3F7</color>
+    <color name="tv_focus_fill">#213746</color>
+    <color name="tv_header_title">#FFFFFFFF</color>
+    <color name="tv_header_text">#99FFFFFF</color>
+    <color name="tv_header_hint">#61FFFFFF</color>
+
+    <style name="TvSettingsTheme" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/tv_bg</item>
+        <item name="android:colorBackground">@color/tv_bg</item>
+        <item name="android:colorAccent">@color/tv_accent</item>
+        <item name="android:colorControlActivated">@color/tv_accent</item>
+        <item name="android:statusBarColor">@color/tv_bg</item>
+        <item name="android:navigationBarColor">@color/tv_bg</item>
+        <item name="android:alertDialogTheme">@style/TvSettingsDialog</item>
+        <item name="android:preferenceStyle">@style/TvPreference</item>
+        <item name="android:preferenceScreenStyle">@style/TvPreference.Screen</item>
+        <item name="android:switchPreferenceStyle">@style/TvPreference.Switch</item>
+        <item name="android:dialogPreferenceStyle">@style/TvPreference.Dialog</item>
+        <item name="android:preferenceCategoryStyle">@style/TvPreference.Category</item>
+    </style>
+
+    <!-- The platform preference styles are private, so these are complete styles of their own. -->
+    <style name="TvPreference">
+        <item name="android:layout">@layout/tv_preference</item>
+    </style>
+    <style name="TvPreference.Screen" />
+    <style name="TvPreference.Switch">
+        <item name="android:widgetLayout">@layout/tv_preference_switch</item>
+    </style>
+    <style name="TvPreference.Dialog">
+        <item name="android:positiveButtonText">@android:string/ok</item>
+        <item name="android:negativeButtonText">@android:string/cancel</item>
+    </style>
+    <style name="TvPreference.Category">
+        <item name="android:layout">@layout/tv_preference_category</item>
+        <item name="android:shouldDisableView">false</item>
+        <item name="android:selectable">false</item>
+    </style>
+
+    <style name="TvSettingsDialog" parent="@android:style/Theme.Material.Dialog.Alert">
+        <item name="android:colorAccent">@color/tv_accent</item>
+        <item name="android:colorControlActivated">@color/tv_accent</item>
+        <item name="android:windowBackground">@drawable/tv_dialog_bg</item>
+        <item name="android:buttonBarButtonStyle">@style/TvDialogButton</item>
+    </style>
+    <style name="TvDialogButton" parent="@android:style/Widget.Material.Button.Borderless.Colored">
+        <item name="android:background">@drawable/tv_button_bg</item>
+        <item name="android:textColor">@color/tv_text_primary</item>
+        <item name="android:minWidth">88dp</item>
+    </style>
+</resources>

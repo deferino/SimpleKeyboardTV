@@ -25,6 +25,7 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
 import android.preference.SwitchPreference;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,16 @@ public final class SingleLanguageSettingsFragment extends PreferenceFragment {
         RichInputMethodManager.init(getActivity());
         mRichImm = RichInputMethodManager.getInstance();
         addPreferencesFromResource(R.xml.empty_settings);
+    }
+
+    @Override
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        final Bundle args = getArguments();
+        final String locale = args != null ? args.getString(LOCALE_BUNDLE_KEY) : null;
+        SettingsActivity.setupScreen(this, view, locale != null
+                ? LocaleResourceUtils.getLocaleDisplayNameInSystemLocale(locale)
+                : getString(R.string.select_language), R.string.tv_desc_language_layouts);
     }
 
     @Override

@@ -22,7 +22,9 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.app.Fragment;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
@@ -31,6 +33,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
+import android.widget.FrameLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
 
@@ -40,6 +45,75 @@ import rkr.simplekeyboard.inputmethod.latin.utils.FragmentUtils;
 public class SettingsActivity extends PreferenceActivity {
     private static final String DEFAULT_FRAGMENT = SettingsFragment.class.getName();
     private static final String TAG = SettingsActivity.class.getSimpleName();
+
+    private TextView mHeaderTitle;
+    private TextView mHeaderDescription;
+
+    /**
+     * Wraps the platform preference layout in the TV layout: a header panel on the left (screen
+     * title, description, version) and the preference list on the right.
+     */
+    private void setupTvLayout() {
+        final ViewGroup content = (ViewGroup) findViewById(android.R.id.content);
+        if (content == null || content.getChildCount() == 0) {
+            return;
+        }
+        final View prefs = content.getChildAt(0);
+        content.removeView(prefs);
+        final View root = getLayoutInflater().inflate(R.layout.tv_settings, content, false);
+        ((ViewGroup) root.findViewById(R.id.tv_content)).addView(prefs,
+                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT));
+        content.addView(root);
+        if (getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_PORTRAIT) {
+            // Not enough room for two panes on an upright screen.
+            root.findViewById(R.id.tv_header).setVisibility(View.GONE);
+        }
+        mHeaderTitle = (TextView) root.findViewById(R.id.tv_header_title);
+        mHeaderDescription = (TextView) root.findViewById(R.id.tv_header_description);
+        try {
+            final String version = getPackageManager()
+                    .getPackageInfo(getPackageName(), 0).versionName;
+            ((TextView) root.findViewById(R.id.tv_header_version))
+                    .setText(getString(R.string.tv_version, version));
+        } catch (final Exception e) {
+            Log.w(TAG, "Version name not available", e);
+        }
+    }
+
+    /**
+     * Called by each settings fragment when its view is ready: styles the preference list for the
+     * D-pad and fills the header panel.
+     */
+    static void setupScreen(final Fragment fragment, final View view, final CharSequence title,
+            final int descriptionResId) {
+        final View listView = view.findViewById(android.R.id.list);
+        if (listView instanceof ListView) {
+            final ListView list = (ListView) listView;
+            final float density = view.getResources().getDisplayMetrics().density;
+            list.setSelector(R.drawable.tv_row_focus);
+            list.setDrawSelectorOnTop(false);
+            list.setDivider(null);
+            list.setDividerHeight(Math.round(4 * density));
+            list.setPadding(0, Math.round(28 * density), 0, Math.round(16 * density));
+            list.setClipToPadding(false);
+            list.setVerticalScrollBarEnabled(false);
+            list.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        }
+        view.setPadding(0, 0, 0, 0);
+        if (fragment.getActivity() instanceof SettingsActivity) {
+            final SettingsActivity activity = (SettingsActivity) fragment.getActivity();
+            if (activity.mHeaderTitle != null) {
+                activity.mHeaderTitle.setText(title);
+                if (descriptionResId != 0) {
+                    activity.mHeaderDescription.setText(descriptionResId);
+                } else {
+                    activity.mHeaderDescription.setText(null);
+                }
+            }
+        }
+    }
 
     @Override
     protected void onStart() {
@@ -111,6 +185,7 @@ public class SettingsActivity extends PreferenceActivity {
             });
         }
 
+        setupTvLayout();
         final ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);

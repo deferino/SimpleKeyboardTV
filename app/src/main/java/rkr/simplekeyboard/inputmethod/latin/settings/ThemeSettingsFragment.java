@@ -59,6 +59,11 @@ public final class ThemeSettingsFragment extends SubScreenFragment
     }
 
     @Override
+    int getDescriptionResId() {
+        return R.string.tv_desc_theme;
+    }
+
+    @Override
     public void onCreate(final Bundle icicle) {
         super.onCreate(icicle);
         addPreferencesFromResource(R.xml.prefs_screen_theme);

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One settings row. The list draws the focus highlight behind it; text and icon colours follow
+     the selected state. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="56dp"
+    android:gravity="center_vertical"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:orientation="horizontal">
+    <ImageView
+        android:id="@android:id/icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="18dp"
+        android:duplicateParentState="true"
+        android:tint="@color/tv_icon_tint" />
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:duplicateParentState="true"
+        android:orientation="vertical">
+        <TextView
+            android:id="@android:id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:duplicateParentState="true"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="@color/tv_text_primary"
+            android:textSize="18sp" />
+        <TextView
+            android:id="@android:id/summary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:duplicateParentState="true"
+            android:maxLines="3"
+            android:textColor="@color/tv_text_secondary"
+            android:textSize="14sp" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@android:id/widget_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginStart="16dp"
+        android:gravity="center_vertical"
+        android:orientation="vertical" />
+</LinearLayout>

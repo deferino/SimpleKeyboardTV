@@ -68,4 +68,13 @@
     <string name="prefs_keyboard_width_settings">Klavye genişliği</string>
     <string name="gboard_tv_style">Gboard TV stili</string>
     <string name="gboard_tv_style_summary">Ortalanmış kompakt klavye ve sayı satırı. Kapatınca önceki ayarların geri gelir</string>
+    <string name="tv_desc_main">TV kumandası için yapılmış hafif bir klavye. Reklam yok, takip yok, izin yok.</string>
+    <string name="tv_desc_languages">Yazarken kullanacağınız dilleri ve düzenleri seçin.</string>
+    <string name="tv_desc_language_layouts">Bu dil için kullanmak istediğiniz düzenleri açın.</string>
+    <string name="tv_desc_preferences">Yazma davranışı ve gösterilecek tuşlar</string>
+    <string name="tv_desc_key_press">Ses, açılır pencere ve uzun basma süresi</string>
+    <string name="tv_desc_appearance">Klavyenin teması, boyutu ve konumu</string>
+    <string name="tv_desc_theme">Klavye için bir renk teması seçin.</string>
+    <string name="tv_desc_test_keyboard">Bir metin kutusu açıp klavyeyi deneyin</string>
+    <string name="tv_version">Sürüm %1$s</string>
 </resources>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings window: header panel on the left, the preference list on the right. The side and
+     top/bottom padding keeps everything inside the TV overscan safe area. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="false"
+    android:orientation="horizontal"
+    android:paddingStart="48dp"
+    android:paddingEnd="48dp"
+    android:paddingTop="27dp"
+    android:paddingBottom="27dp">
+    <LinearLayout
+        android:id="@+id/tv_header"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:orientation="vertical"
+        android:paddingEnd="40dp"
+        android:paddingTop="28dp">
+        <ImageView
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_launcher" />
+        <TextView
+            android:id="@+id/tv_header_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:fontFamily="sans-serif-light"
+            android:maxLines="2"
+            android:textColor="@color/tv_header_title"
+            android:textSize="34sp" />
+        <TextView
+            android:id="@+id/tv_header_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:lineSpacingMultiplier="1.15"
+            android:textColor="@color/tv_header_text"
+            android:textSize="16sp" />
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+        <TextView
+            android:id="@+id/tv_header_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tv_header_hint"
+            android:textSize="13sp" />
+    </LinearLayout>
+    <FrameLayout
+        android:id="@+id/tv_content"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="3" />
+</LinearLayout>

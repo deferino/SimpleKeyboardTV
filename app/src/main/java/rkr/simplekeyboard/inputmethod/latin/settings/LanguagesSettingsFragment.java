@@ -81,8 +81,6 @@ public final class LanguagesSettingsFragment extends PreferenceFragment {
         mRichImm = RichInputMethodManager.getInstance();
 
         addPreferencesFromResource(R.xml.empty_settings);
-
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -90,6 +88,13 @@ public final class LanguagesSettingsFragment extends PreferenceFragment {
                              final Bundle savedInstanceState) {
         mView = super.onCreateView(inflater, container, savedInstanceState);
         return mView;
+    }
+
+    @Override
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        SettingsActivity.setupScreen(this, view, getString(R.string.select_language),
+                R.string.tv_desc_languages);
     }
 
     @Override

@@ -19,22 +19,32 @@
     <PreferenceScreen
         android:fragment="rkr.simplekeyboard.inputmethod.latin.settings.PreferencesSettingsFragment"
         android:title="@string/settings_screen_preferences"
+        android:summary="@string/tv_desc_preferences"
+        android:icon="@drawable/ic_tv_tune"
         android:key="screen_preferences" />
     <PreferenceScreen
         android:fragment="rkr.simplekeyboard.inputmethod.latin.settings.KeyPressSettingsFragment"
         android:title="@string/settings_screen_key_press"
+        android:summary="@string/tv_desc_key_press"
+        android:icon="@drawable/ic_tv_keypress"
         android:key="screen_key_press" />
     <PreferenceScreen
         android:fragment="rkr.simplekeyboard.inputmethod.latin.settings.AppearanceSettingsFragment"
         android:title="@string/settings_screen_appearance"
+        android:summary="@string/tv_desc_appearance"
+        android:icon="@drawable/ic_tv_palette"
         android:key="screen_appearance" />
     <Preference
         android:title="@string/test_keyboard"
+        android:summary="@string/tv_desc_test_keyboard"
+        android:icon="@drawable/ic_tv_edit"
         android:key="test_keyboard" />
     <Preference
         android:title="@string/privacy_policy"
+        android:icon="@drawable/ic_tv_lock"
         android:key="privacy_policy" />
     <Preference
         android:title="@string/license"
+        android:icon="@drawable/ic_tv_document"
         android:key="license" />
 </PreferenceScreen>

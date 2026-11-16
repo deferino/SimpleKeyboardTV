@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -42,7 +43,6 @@ public final class SettingsFragment extends InputMethodSettingsFragment {
     @Override
     public void onCreate(final Bundle icicle) {
         super.onCreate(icicle);
-        setHasOptionsMenu(true);
         addPreferencesFromResource(R.xml.prefs);
         final PreferenceScreen preferenceScreen = getPreferenceScreen();
         preferenceScreen.setTitle(
@@ -74,6 +74,13 @@ public final class SettingsFragment extends InputMethodSettingsFragment {
                 return true;
             }
         });
+    }
+
+    @Override
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        SettingsActivity.setupScreen(this, view, getString(R.string.english_ime_name),
+                R.string.tv_desc_main);
     }
 
     private void showTestKeyboardDialog() {
